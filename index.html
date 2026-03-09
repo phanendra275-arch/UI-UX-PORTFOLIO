@@ -1,0 +1,1604 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Phanendra Nalla — UI/UX Designer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   THEME TOKENS
+══════════════════════════════════════════ */
+:root { --ease:cubic-bezier(.77,0,.18,1); --ease2:cubic-bezier(.34,1.56,.64,1); }
+
+[data-theme="dark"] {
+  --bg:#07070F; --bg2:#0D0D1C; --bg3:#111128;
+  --surf:#13132A; --surf2:#1A1A35;
+  --bdr:rgba(255,255,255,.06); --bdr2:rgba(255,255,255,.13);
+  --ink:#EEEEFF; --ink2:#7575AA; --muted:#33335A;
+  --a1:#6C63FF; --a2:#FF5FA0; --a3:#3FDBA8; --a4:#FFD166;
+  --a1t:rgba(108,99,255,.1); --a2t:rgba(255,95,160,.08);
+  --a3t:rgba(63,219,168,.08); --a4t:rgba(255,209,102,.08);
+  --shadow:0 32px 80px rgba(0,0,0,.6);
+  --glow:0 0 60px rgba(108,99,255,.2);
+  --ripple-color:#F5F4FF;
+}
+[data-theme="light"] {
+  --bg:#F4F3EE; --bg2:#E9E8E0; --bg3:#DDDBD2;
+  --surf:#FFFFFF; --surf2:#F0EFE8;
+  --bdr:rgba(0,0,0,.07); --bdr2:rgba(0,0,0,.15);
+  --ink:#111028; --ink2:#5A5880; --muted:#B0AED0;
+  --a1:#4A42E8; --a2:#D93580; --a3:#0E9E6E; --a4:#B07000;
+  --a1t:rgba(74,66,232,.08); --a2t:rgba(217,53,128,.07);
+  --a3t:rgba(14,158,110,.07); --a4t:rgba(176,112,0,.07);
+  --shadow:0 24px 60px rgba(0,0,0,.1);
+  --glow:0 0 60px rgba(74,66,232,.12);
+  --ripple-color:#111028;
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET
+══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Instrument Sans',sans-serif;font-size:16px;line-height:1.6;
+  overflow-x:hidden;cursor:none;
+  transition:background .6s var(--ease),color .6s var(--ease);
+}
+a{text-decoration:none;color:inherit}
+button{border:none;background:none;cursor:none;font-family:inherit}
+
+/* ══════════════════════════════════════════
+   CUSTOM CURSOR
+══════════════════════════════════════════ */
+#cr,#cr2{
+  position:fixed;border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+}
+#cr{width:8px;height:8px;background:var(--a1);transition:background .3s,width .2s,height .2s}
+#cr2{
+  width:38px;height:38px;border:1.5px solid var(--a1);background:transparent;
+  transition:width .15s,height .15s,border-color .3s,opacity .3s,transform .1s;
+}
+.c-hover #cr{width:18px;height:18px;background:var(--a2)}
+.c-hover #cr2{width:60px;height:60px;border-color:var(--a2);opacity:.5}
+
+/* ══════════════════════════════════════════
+   THEME RIPPLE — ink drop animation
+══════════════════════════════════════════ */
+#ripple{
+  position:fixed;pointer-events:none;z-index:9000;
+  border-radius:50%;
+  width:1px;height:1px;
+  background:var(--ripple-color);
+  transform:translate(-50%,-50%) scale(0);
+  transition:none;
+}
+#ripple.go{
+  transform:translate(-50%,-50%) scale(1);
+  transition:transform .85s cubic-bezier(.2,.6,.3,1),opacity .85s ease;
+}
+#ripple.fade{opacity:0}
+
+/* ══════════════════════════════════════════
+   NOISE OVERLAY
+══════════════════════════════════════════ */
+.noise{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:800;
+  height:60px;padding:0 52px;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bdr);
+  transition:background .6s,border-color .6s;
+}
+[data-theme="dark"] nav{background:rgba(7,7,15,.75)}
+[data-theme="light"] nav{background:rgba(244,243,238,.82)}
+
+.logo{
+  font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:3px;
+  color:var(--ink);transition:color .6s;
+}
+.logo span{color:var(--a1);transition:color .6s}
+
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink2);
+  transition:color .2s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;
+  background:var(--a1);transition:width .3s var(--ease);
+}
+.nav-links a:hover{color:var(--a1)}
+.nav-links a:hover::after{width:100%}
+
+.nav-r{display:flex;align-items:center;gap:14px}
+
+/* Theme toggle — pill style */
+.tog-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surf);border:1px solid var(--bdr2);
+  border-radius:100px;padding:5px 8px 5px 12px;
+  transition:background .5s,border-color .5s;
+}
+.tog-label{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  color:var(--ink2);letter-spacing:.05em;white-space:nowrap;
+  transition:color .5s;
+}
+.tog-btn{
+  width:44px;height:24px;border-radius:100px;
+  background:var(--bg3);border:1px solid var(--bdr2);
+  position:relative;cursor:none;
+  transition:background .4s,border-color .4s;
+  flex-shrink:0;
+}
+.tog-btn::after{
+  content:'';position:absolute;
+  width:18px;height:18px;border-radius:50%;
+  top:2px;left:2px;
+  transition:transform .4s var(--ease2),background .4s;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+[data-theme="dark"] .tog-btn::after{background:var(--a4);transform:translateX(0)}
+[data-theme="light"] .tog-btn::after{background:var(--a1);transform:translateX(20px)}
+
+.nav-hire{
+  background:var(--a1);color:#fff;
+  padding:8px 20px;border-radius:7px;
+  font-size:.78rem;font-weight:600;
+  transition:transform .2s,box-shadow .2s,background .5s;
+}
+.nav-hire:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.35)}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#hero{
+  min-height:100vh;padding:90px 52px 70px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--bdr) 1px,transparent 1px),
+    linear-gradient(90deg,var(--bdr) 1px,transparent 1px);
+  background-size:72px 72px;
+  transition:opacity .6s;
+}
+.orb{
+  position:absolute;border-radius:50%;pointer-events:none;filter:blur(90px);z-index:0;
+  transition:background .6s;
+}
+.o1{width:60vw;height:60vw;top:-20%;right:-15%;background:radial-gradient(circle,rgba(108,99,255,.14),transparent 65%)}
+.o2{width:45vw;height:45vw;bottom:-15%;left:-10%;background:radial-gradient(circle,rgba(255,95,160,.1),transparent 65%)}
+.o3{width:30vw;height:30vw;top:45%;left:38%;background:radial-gradient(circle,rgba(63,219,168,.08),transparent 65%)}
+[data-theme="light"] .o1{background:radial-gradient(circle,rgba(74,66,232,.09),transparent 65%)}
+[data-theme="light"] .o2{background:radial-gradient(circle,rgba(217,53,128,.07),transparent 65%)}
+[data-theme="light"] .o3{background:radial-gradient(circle,rgba(14,158,110,.06),transparent 65%)}
+
+.hero-inner{position:relative;z-index:2;max-width:1400px;margin:0 auto;width:100%}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--a1t);border:1px solid rgba(108,99,255,.22);
+  border-radius:100px;padding:5px 14px 5px 8px;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--a1);margin-bottom:28px;
+  animation:fadeUp .7s var(--ease) both;
+  transition:background .6s,color .6s,border-color .6s;
+}
+.pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--a3);flex-shrink:0;
+  animation:blink 2.5s ease-in-out infinite;transition:background .6s;
+}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* BIG KINETIC TITLE */
+.hero-h{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4.5rem,11.5vw,12rem);
+  line-height:.88;letter-spacing:2px;
+  margin-bottom:32px;
+  animation:fadeUp .75s var(--ease) .1s both;
+  color:var(--ink);transition:color .6s;
+}
+.hero-h .it{
+  font-family:'DM Serif Display',serif;
+  font-style:italic;font-size:.76em;letter-spacing:-1px;
+  color:var(--a1);display:block;transition:color .6s;
+}
+.hero-h .ou{
+  -webkit-text-stroke:2px var(--muted);
+  color:transparent;display:block;
+  transition:-webkit-text-stroke-color .6s;
+}
+
+.hero-row{display:flex;align-items:flex-start;gap:80px;flex-wrap:wrap}
+.hero-desc{
+  max-width:400px;font-size:.97rem;color:var(--ink2);
+  line-height:1.85;animation:fadeUp .75s var(--ease) .2s both;
+  transition:color .6s;
+}
+.hero-desc strong{color:var(--ink);transition:color .6s}
+
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;animation:fadeUp .75s var(--ease) .3s both}
+.cta-p{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--a1);color:#fff;
+  padding:12px 26px;border-radius:8px;font-weight:600;font-size:.88rem;
+  transition:transform .2s,box-shadow .2s,background .5s;
+}
+.cta-p:hover{transform:translateY(-3px);box-shadow:var(--glow)}
+.cta-s{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1.5px solid var(--bdr2);color:var(--ink2);
+  padding:12px 26px;border-radius:8px;font-weight:600;font-size:.88rem;
+  transition:all .2s;
+}
+.cta-s:hover{border-color:var(--a1);color:var(--a1)}
+
+/* STATS STRIP */
+.hero-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin-top:56px;
+  animation:fadeUp .75s var(--ease) .4s both;
+}
+.hs{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+  padding:20px 16px;position:relative;overflow:hidden;
+  transition:all .25s,background .6s,border-color .6s;
+}
+.hs::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--a1))}
+.hs:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.hs-n{
+  font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1;
+  color:var(--c,var(--a1));transition:color .6s;
+}
+.hs-n sup{font-size:1.2rem}
+.hs-l{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--ink2);margin-top:4px;transition:color .6s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+.scroll-hint{
+  position:absolute;bottom:36px;left:52px;z-index:2;
+  display:flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);
+  animation:fadeUp .75s var(--ease) .65s both;transition:color .6s;
+}
+.s-line{width:1px;height:44px;background:linear-gradient(transparent,var(--muted));animation:sl 2s ease-in-out infinite;transition:background .6s}
+@keyframes sl{0%,100%{height:44px;opacity:.5}50%{height:26px;opacity:1}}
+
+/* ══════════════════════════════════════════
+   TICKER
+══════════════════════════════════════════ */
+.ticker-wrap{
+  overflow:hidden;padding:15px 0;
+  border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);
+  background:var(--bg2);transition:background .6s,border-color .6s;
+}
+.ticker-inner{display:flex;animation:tick 24s linear infinite;white-space:nowrap}
+.ticker-inner:hover{animation-play-state:paused}
+.ti{
+  display:inline-flex;align-items:center;gap:12px;padding:0 28px;
+  font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:2px;
+  color:var(--ink2);flex-shrink:0;transition:color .6s;
+}
+.td{width:5px;height:5px;border-radius:50%;background:var(--a1);flex-shrink:0;transition:background .6s}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ══════════════════════════════════════════
+   SECTION BASE
+══════════════════════════════════════════ */
+.sec{padding:100px 52px;position:relative}
+.sec.alt{background:var(--bg2);transition:background .6s}
+.sec.d{background:var(--bg3);transition:background .6s}
+
+.ey{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:10px;
+  display:flex;align-items:center;gap:10px;transition:color .6s;
+}
+.ey::before{content:'';width:20px;height:1px;background:var(--a1);transition:background .6s}
+.sh{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.2rem,4.5vw,4rem);letter-spacing:1px;line-height:.92;
+  margin-bottom:14px;color:var(--ink);transition:color .6s;
+}
+.sh em{
+  font-family:'DM Serif Display',serif;font-style:italic;
+  color:var(--a1);letter-spacing:-1px;transition:color .6s;
+}
+.ssub{
+  color:var(--ink2);line-height:1.85;max-width:580px;
+  margin-bottom:56px;font-size:.95rem;transition:color .6s;
+}
+
+/* reveal animation */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+.rv.vis{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}
+.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
+
+/* ══════════════════════════════════════════
+   PROCESS
+══════════════════════════════════════════ */
+.proc-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+  border:1px solid var(--bdr);border-radius:18px;overflow:hidden;
+  transition:border-color .6s;
+}
+.ps{
+  padding:30px 24px;border-right:1px solid var(--bdr);
+  background:var(--surf);position:relative;overflow:hidden;
+  transition:background .3s var(--ease),border-color .6s;
+}
+.ps:last-child{border-right:none}
+.ps::before{content:'';position:absolute;inset:0;background:var(--a1);opacity:0;transition:opacity .3s}
+.ps:hover::before{opacity:1}
+.ps:hover .ps-num,.ps:hover .ps-ico,.ps:hover .ps-t,.ps:hover .ps-d{color:#fff!important}
+.ps:hover .ps-ch{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.2)}
+.ps-num,.ps-ico,.ps-t,.ps-d,.ps-ch{position:relative;z-index:1}
+.ps-num{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);margin-bottom:16px;transition:color .2s,.6s}
+.ps-ico{font-size:1.6rem;margin-bottom:10px;display:block}
+.ps-t{
+  font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;
+  color:var(--ink);margin-bottom:7px;transition:color .2s,color .6s;
+}
+.ps-d{font-size:.78rem;color:var(--ink2);line-height:1.65;transition:color .2s,color .6s}
+.ps-ch{
+  display:inline-block;margin-top:10px;
+  font-family:'JetBrains Mono',monospace;font-size:.54rem;
+  padding:2px 9px;border-radius:20px;
+  background:var(--a1t);border:1px solid rgba(108,99,255,.18);color:var(--a1);
+  transition:all .2s,background .6s,color .6s,border-color .6s;
+}
+
+/* ══════════════════════════════════════════
+   PROJECT CARDS
+══════════════════════════════════════════ */
+.pcard{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:22px;
+  overflow:hidden;margin-bottom:24px;
+  transition:border-color .25s,box-shadow .25s,background .6s;
+}
+.pcard:hover{box-shadow:var(--shadow);border-color:var(--bdr2)}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;min-height:560px}
+.pc-grid.flip{direction:rtl}
+.pc-grid.flip>*{direction:ltr}
+
+/* content side */
+.pcc{padding:48px 44px;display:flex;flex-direction:column;justify-content:space-between}
+.pc-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.pb{
+  font-family:'JetBrains Mono',monospace;font-size:.56rem;
+  padding:3px 10px;border-radius:20px;border:1px solid var(--bdr2);color:var(--ink2);
+  transition:border-color .6s,color .6s;
+}
+.pc-idx{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-bottom:5px;transition:color .6s}
+.pc-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.8rem,4.5vw,4.8rem);
+  letter-spacing:1px;line-height:.88;margin-bottom:8px;transition:color .6s;
+}
+.pc-tag{
+  font-family:'DM Serif Display',serif;font-style:italic;font-size:1rem;
+  color:var(--ink2);margin-bottom:16px;transition:color .6s;
+}
+.pc-desc{font-size:.85rem;color:var(--ink2);line-height:1.8;margin-bottom:20px;transition:color .6s}
+.pc-meta{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:22px}
+.pm-l{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;transition:color .6s}
+.pm-v{font-size:.8rem;font-weight:600;transition:color .6s}
+
+/* TABS */
+.tabs-row{display:flex;gap:2px;background:var(--bg2);border-radius:10px;padding:3px;margin-bottom:16px;transition:background .6s}
+.tb{
+  flex:1;padding:7px 4px;text-align:center;border-radius:7px;
+  font-family:'JetBrains Mono',monospace;font-size:.56rem;
+  color:var(--ink2);cursor:none;transition:all .2s,color .6s,background .6s;
+}
+.tb.on{background:var(--surf);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.tp{display:none;animation:fadeT .3s ease}
+.tp.on{display:block}
+@keyframes fadeT{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* metrics strip */
+.mstrip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--bdr);border-radius:11px;overflow:hidden;transition:background .6s;
+}
+.mb{background:var(--bg2);padding:13px 8px;text-align:center;transition:background .6s}
+.mb-n{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;line-height:1;margin-bottom:2px}
+.mb-l{font-size:.66rem;color:var(--ink2);transition:color .6s}
+.mb-c{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--a3);margin-top:2px;transition:color .6s}
+
+/* timeline */
+.tl{padding-left:18px;border-left:1px solid var(--bdr);transition:border-color .6s}
+.tli{position:relative;padding-left:14px;margin-bottom:18px}
+.tld{
+  width:9px;height:9px;border-radius:50%;
+  border:2px solid var(--a1);background:var(--bg);
+  position:absolute;left:-16px;top:4px;transition:all .6s;
+}
+.tld.f{background:var(--a1)}
+.tl-s{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--a1);margin-bottom:2px;transition:color .6s}
+.tl-t{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.5px;color:var(--ink);margin-bottom:4px;transition:color .6s}
+.tl-d{font-size:.78rem;color:var(--ink2);line-height:1.6;transition:color .6s}
+.tl-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.tlt{
+  font-family:'JetBrains Mono',monospace;font-size:.52rem;
+  padding:2px 7px;border-radius:20px;
+  background:var(--a1t);border:1px solid rgba(108,99,255,.14);color:var(--a1);
+  transition:all .6s;
+}
+
+/* wireframe grid */
+.wfg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wfc{background:var(--bg2);border:1px solid var(--bdr);border-radius:9px;overflow:hidden;transition:background .6s,border-color .6s}
+.wfl{
+  padding:5px 9px;border-bottom:1px solid var(--bdr);
+  font-family:'JetBrains Mono',monospace;font-size:.52rem;
+  color:var(--muted);display:flex;align-items:center;gap:4px;transition:border-color .6s,color .6s;
+}
+.wfl::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--a1);flex-shrink:0;transition:background .6s}
+.wfb{padding:8px;display:flex;justify-content:center}
+.wfp{background:#f0f0f0;border-radius:12px;border:2px solid #ddd;padding:6px;width:82px}
+.wb{height:var(--h,7px);background:#E0E0E0;border-radius:3px;margin-bottom:3px;width:var(--w,100%)}
+.wb.d{background:#B8B8B8}.wb.a{background:rgba(74,66,232,.3)}.wb.g{background:rgba(14,158,110,.25)}.wb.r{background:rgba(217,53,128,.2)}
+.wbr{display:flex;gap:3px;margin-bottom:3px}
+.wbc{border-radius:50%;background:#E0E0E0;flex-shrink:0}
+.wbnav{display:flex;justify-content:space-around;padding:3px 0 2px;border-top:1px solid #eee;margin-top:3px}
+.wbnd{width:10px;height:10px;background:#E0E0E0;border-radius:3px}
+
+/* design system */
+.dsg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.dsb{background:var(--bg2);border-radius:9px;padding:14px;transition:background .6s}
+.dsh{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.5px;color:var(--ink);margin-bottom:10px;transition:color .6s}
+.sw{display:flex;gap:5px;flex-wrap:wrap}
+.swi{display:flex;flex-direction:column;align-items:center;gap:3px}
+.swc{width:32px;height:32px;border-radius:7px}
+.swl{font-family:'JetBrains Mono',monospace;font-size:.44rem;color:var(--muted);transition:color .6s}
+.ts{display:flex;flex-direction:column;gap:6px}
+.tsr{display:flex;align-items:baseline;gap:7px}
+.tss{font-family:'JetBrains Mono',monospace;font-size:.47rem;color:var(--muted);min-width:28px;transition:color .6s}
+
+/* card actions */
+.pc-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.act-p{
+  display:inline-flex;align-items:center;gap:6px;
+  color:#fff;padding:10px 18px;border-radius:8px;
+  font-size:.76rem;font-weight:600;transition:all .2s;
+}
+.act-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.3)}
+.act-g{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1.5px solid var(--bdr2);color:var(--ink2);
+  padding:10px 18px;border-radius:8px;
+  font-size:.76rem;font-weight:600;
+  transition:all .2s,border-color .6s,color .6s;
+}
+.act-g:hover{border-color:var(--a1);color:var(--a1)}
+
+/* expand toggle */
+.exp-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1.5px solid var(--bdr2);color:var(--ink2);
+  padding:9px 18px;border-radius:8px;
+  font-size:.76rem;font-weight:600;cursor:none;
+  transition:all .2s,border-color .6s,color .6s;
+}
+.exp-btn:hover{border-color:var(--a1);color:var(--a1)}
+.exp-arr{display:inline-block;transition:transform .35s var(--ease)}
+.exp-btn.open .exp-arr{transform:rotate(180deg)}
+
+/* visual side */
+.pcv{
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  padding:36px 28px;
+}
+.vg{
+  position:absolute;border-radius:50%;filter:blur(55px);pointer-events:none;
+}
+
+/* phone */
+.ph{
+  width:195px;height:405px;border-radius:34px;
+  border:4px solid var(--surf2);background:#000;overflow:hidden;
+  box-shadow:0 28px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04);
+  position:relative;z-index:2;flex-shrink:0;
+  transition:border-color .6s;
+}
+[data-theme="light"] .ph{border-color:#CBD2E0;box-shadow:0 28px 60px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.05)}
+
+/* ══════════════════════════════════════════
+   CASE STUDY EXPAND
+══════════════════════════════════════════ */
+.cex{display:none;padding:0 44px 52px;animation:cexp .4s var(--ease)}
+.cex.open{display:block}
+@keyframes cexp{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.cdiv{height:1px;background:var(--bdr);margin-bottom:48px;transition:background .6s}
+
+/* case sections */
+.css2{margin-bottom:52px}
+.css2:last-child{margin-bottom:0}
+.csl{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;transition:color .6s;
+}
+.csl::before{content:'';width:14px;height:1px}
+.csh{
+  font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;line-height:.9;
+  margin-bottom:12px;transition:color .6s;
+}
+.csp{font-size:.88rem;color:var(--ink2);line-height:1.85;max-width:680px;margin-bottom:8px;transition:color .6s}
+
+.ovg{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);border-radius:13px;overflow:hidden;margin-top:22px;transition:background .6s}
+.ovb{background:var(--bg2);padding:18px;text-align:center;transition:background .6s}
+.ovi{font-size:1.3rem;margin-bottom:6px}
+.ovl{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);margin-bottom:3px;transition:color .6s}
+.ovv{font-size:.84rem;font-weight:600;transition:color .6s}
+
+/* problem/solution */
+.psd{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px}
+.psc{padding:26px;border-radius:13px;border:1px solid var(--bdr);transition:border-color .6s,background .6s}
+.psc.pr{background:var(--a2t);border-color:rgba(217,53,128,.18)}
+.psc.sl{background:var(--a3t);border-color:rgba(14,158,110,.18)}
+.psi{font-size:1.4rem;margin-bottom:9px}
+.pst{font-size:.9rem;font-weight:700;margin-bottom:9px}
+.psc.pr .pst{color:var(--a2)}.psc.sl .pst{color:var(--a3)}
+.psul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.psul li{font-size:.81rem;color:var(--ink2);padding-left:16px;position:relative;line-height:1.6;transition:color .6s}
+.psul li::before{position:absolute;left:0}
+.psc.pr .psul li::before{content:'✗';color:var(--a2)}
+.psc.sl .psul li::before{content:'✓';color:var(--a3)}
+
+/* personas */
+.peg{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:22px}
+.pec{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:13px;padding:22px;position:relative;overflow:hidden;
+  transition:background .6s,border-color .6s;
+}
+.pec::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.peav{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;margin-bottom:10px;
+}
+.pen{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.5px;color:var(--ink);margin-bottom:1px;transition:color .6s}
+.per{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--muted);margin-bottom:10px;transition:color .6s}
+.petg{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.pett{font-family:'JetBrains Mono',monospace;font-size:.53rem;padding:2px 8px;border-radius:20px;border:1px solid var(--bdr);color:var(--muted);transition:all .6s}
+.peb{font-size:.8rem;color:var(--ink2);line-height:1.7;transition:color .6s}
+.peb strong{color:var(--ink);display:block;margin-bottom:2px;transition:color .6s}
+.peq{
+  margin-top:9px;padding:8px 11px;border-radius:7px;
+  border-left:2px solid var(--a2);background:var(--a2t);
+  font-size:.76rem;color:var(--ink2);transition:color .6s,background .6s,border-color .6s;
+}
+
+/* flow */
+.flb{
+  background:var(--bg2);border:1px solid var(--bdr);border-radius:13px;
+  padding:22px;overflow-x:auto;margin-top:22px;transition:background .6s,border-color .6s;
+}
+.flr{display:flex;align-items:center;min-width:560px;margin-bottom:13px}
+.fn{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:7px;
+  padding:6px 12px;font-size:.68rem;font-weight:600;white-space:nowrap;flex-shrink:0;
+  transition:all .6s;
+}
+.fn.st{color:#fff}.fn.en{color:var(--bg)}
+.fn.dc{border-color:var(--a4);background:var(--a4t)}
+.fa{width:24px;height:1.5px;background:var(--bdr2);flex-shrink:0;position:relative;transition:background .6s}
+.fa::after{content:'▸';position:absolute;right:-4px;top:-7px;color:var(--muted);font-size:.58rem}
+.fln{
+  padding:11px;border-radius:8px;border-left:2px solid;
+  font-size:.8rem;color:var(--ink2);transition:color .6s;
+}
+.fln strong{display:block;margin-bottom:3px;font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.07em}
+
+/* hifi */
+.hfg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.hfi{border-radius:14px;overflow:hidden;border:1px solid var(--bdr);transition:border-color .6s}
+.hfl{
+  padding:8px 12px;border-top:1px solid var(--bdr);
+  font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);
+  text-align:center;background:var(--surf);
+  transition:border-color .6s,color .6s,background .6s;
+}
+
+/* metrics */
+.metg{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:22px}
+.metc{
+  background:var(--bg2);border:1px solid var(--bdr);border-radius:11px;
+  padding:18px;text-align:center;transition:background .6s,border-color .6s;
+}
+.metn{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;margin-bottom:2px}
+.metl{font-size:.74rem;color:var(--ink2);transition:color .6s}
+.metc2{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--a3);margin-top:3px;transition:color .6s}
+
+/* learnings */
+.leg{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:22px}
+.lec{
+  background:var(--bg2);border:1px solid var(--bdr);border-radius:11px;
+  padding:18px;transition:background .6s,border-color .6s;
+}
+.lei{font-size:1.3rem;margin-bottom:8px}
+.let{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.5px;color:var(--ink);margin-bottom:5px;transition:color .6s}
+.led{font-size:.79rem;color:var(--ink2);line-height:1.7;transition:color .6s}
+
+/* figma guide */
+.fgb{border-radius:13px;padding:24px;margin-top:22px;border:1px solid;transition:all .6s}
+.fgt{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.5px;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:7px;transition:color .6s}
+.fgs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgsi{background:var(--surf);border-radius:9px;padding:13px;transition:background .6s}
+.fgsn{font-family:'JetBrains Mono',monospace;font-size:.54rem;margin-bottom:4px}
+.fgst{font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.5px;color:var(--ink);margin-bottom:3px;transition:color .6s}
+.fgsd{font-size:.75rem;color:var(--ink2);line-height:1.6;transition:color .6s}
+.fgcode{
+  font-family:'JetBrains Mono',monospace;font-size:.64rem;
+  border:1px solid var(--bdr);border-radius:5px;
+  padding:8px;margin-top:8px;line-height:1.6;
+  transition:border-color .6s,background .6s;
+}
+[data-theme="dark"] .fgcode{background:rgba(0,0,0,.35)}
+[data-theme="light"] .fgcode{background:rgba(0,0,0,.04)}
+
+/* ══════════════════════════════════════════
+   ABOUT
+══════════════════════════════════════════ */
+.about-lay{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start}
+.acard{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:18px;
+  overflow:hidden;box-shadow:var(--shadow);transition:background .6s,border-color .6s,box-shadow .6s;
+}
+.abn{
+  height:90px;display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:4px;
+  color:rgba(255,255,255,.08);position:relative;overflow:hidden;
+}
+.abody{padding:26px}
+.aav{
+  width:60px;height:60px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#fff;
+  margin-bottom:14px;margin-top:-44px;
+  border:4px solid var(--surf);position:relative;z-index:1;transition:border-color .6s;
+}
+.an{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;color:var(--ink);margin-bottom:2px;transition:color .6s}
+.ar{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);margin-bottom:16px;transition:color .6s}
+.afc{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.af{display:flex;align-items:center;gap:9px;font-size:.82rem;color:var(--ink2);transition:color .6s}
+.afi{font-size:.88rem;flex-shrink:0}
+.acerts{display:flex;flex-wrap:wrap;gap:5px}
+.cert{
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  padding:3px 9px;border-radius:20px;
+  background:var(--a1t);border:1px solid rgba(108,99,255,.18);color:var(--a1);
+  transition:all .6s;
+}
+
+/* skills */
+.skg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:22px}
+.ski{
+  display:flex;align-items:center;gap:9px;
+  background:var(--surf);border:1px solid var(--bdr);border-radius:9px;
+  padding:10px 13px;transition:all .22s,background .6s,border-color .6s;
+}
+.ski:hover{transform:translateX(4px);border-color:var(--bdr2)}
+.ski-i{font-size:.92rem;flex-shrink:0}
+.ski-n{font-size:.82rem;font-weight:600;transition:color .6s}
+.ski-l{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--a1);margin-left:auto;transition:color .6s}
+
+/* ══════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════ */
+#contact{
+  padding:110px 52px;text-align:center;position:relative;overflow:hidden;
+}
+.cg{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(108,99,255,.07),transparent 70%);
+  transition:background .6s;
+}
+[data-theme="light"] .cg{background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(74,66,232,.05),transparent 70%)}
+.ci{position:relative;z-index:2;max-width:680px;margin:0 auto}
+.be{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.6rem,3.5vw,3rem);letter-spacing:1px;
+  color:var(--a1);display:inline-block;margin-top:14px;position:relative;transition:color .6s;
+}
+.be::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--a1);transition:width .4s var(--ease)}
+.be:hover::after{width:100%}
+.cls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.cl{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;border-radius:9px;
+  font-family:'JetBrains Mono',monospace;font-size:.63rem;
+  border:1px solid var(--bdr2);color:var(--ink2);
+  transition:all .2s,border-color .6s,color .6s;
+}
+.cl:hover{border-color:var(--a1);color:var(--a1);transform:translateY(-2px)}
+.cl.em{background:var(--a1);color:#fff;border-color:var(--a1)}
+.cl.em:hover{opacity:.88;color:#fff;transform:translateY(-2px)}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer{
+  background:var(--bg2);border-top:1px solid var(--bdr);
+  padding:24px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  transition:background .6s,border-color .6s;
+}
+.fl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);transition:color .6s}
+.fl span{color:var(--a1);transition:color .6s}
+.flks{display:flex;gap:18px}
+.flks a{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);transition:color .2s}
+.flks a:hover{color:var(--a1)}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:1100px){
+  nav,footer,.sec,#contact{padding-left:24px;padding-right:24px}
+  #hero{padding:100px 24px 64px}
+  .pc-grid,.about-lay{grid-template-columns:1fr}
+  .pc-grid.flip{direction:ltr}
+  .pcv{min-height:240px}
+  .proc-grid{grid-template-columns:1fr 1fr}
+  .ps{border-bottom:1px solid var(--bdr)}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .hfg,.leg,.fgs,.dsg{grid-template-columns:1fr}
+  .metg,.mstrip{grid-template-columns:1fr 1fr}
+  .peg,.psd{grid-template-columns:1fr}
+  .ovg{grid-template-columns:1fr 1fr}
+  .cex{padding:0 24px 40px}
+  .wfg{grid-template-columns:1fr}
+  .skg{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .hero-h{letter-spacing:0}
+  .proc-grid{grid-template-columns:1fr}
+  nav{padding:0 16px}
+  .nav-links{display:none}
+  .hero-stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div id="cr"></div>
+<div id="cr2"></div>
+<div id="ripple"></div>
+
+<!-- ████ NAV ████ -->
+<nav>
+  <div class="logo">PN<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#process">Process</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-r">
+    <div class="tog-pill">
+      <span class="tog-label" id="tog-lbl">Dark Mode</span>
+      <button class="tog-btn" id="tog" aria-label="Toggle theme"></button>
+    </div>
+    <a href="mailto:Phanendra275@gmail.com" class="nav-hire">Hire Me →</a>
+  </div>
+</nav>
+
+<!-- ████ HERO ████ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      Available for UI/UX Design · Hyderabad, India
+    </div>
+
+    <h1 class="hero-h">
+      I DESIGN
+      <span class="it">things that</span>
+      <span class="ou">FEEL RIGHT</span>
+    </h1>
+
+    <div class="hero-row">
+      <div>
+        <p class="hero-desc">
+          <strong>Phanendra Nalla</strong> — UI/UX Designer &amp; Full-Stack Developer.
+          I research, wireframe, prototype, test — then <strong>build the actual code.</strong>
+          Two complete case studies with real usability data below.
+        </p>
+        <div class="hero-ctas">
+          <a href="#work" class="cta-p" style="background:var(--a1)">View Case Studies ↓</a>
+          <a href="#contact" class="cta-s">Get In Touch →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hs rv" style="--c:var(--a1)">
+        <div class="hs-n" style="color:var(--a1)">91<sup>%</sup></div>
+        <div class="hs-l">// task completion</div>
+      </div>
+      <div class="hs rv d1" style="--c:var(--a2)">
+        <div class="hs-n" style="color:var(--a2)">6.4<sup>s</sup></div>
+        <div class="hs-l">// avg log time</div>
+      </div>
+      <div class="hs rv d2" style="--c:var(--a3)">
+        <div class="hs-n" style="color:var(--a3)">87<sup>%</sup></div>
+        <div class="hs-l">// satisfaction score</div>
+      </div>
+      <div class="hs rv d3" style="--c:var(--a4)">
+        <div class="hs-n" style="color:var(--a4)">2<sup>+</sup></div>
+        <div class="hs-l">// full case studies</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint"><div class="s-line"></div>scroll to explore</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" aria-hidden="true">
+    <span class="ti"><span class="td"></span>UI/UX DESIGN</span>
+    <span class="ti"><span class="td"></span>CONNECTSPHERE</span>
+    <span class="ti"><span class="td"></span>FLOWBUDGET</span>
+    <span class="ti"><span class="td"></span>FIGMA PROTOTYPING</span>
+    <span class="ti"><span class="td"></span>USER RESEARCH</span>
+    <span class="ti"><span class="td"></span>DESIGN SYSTEMS</span>
+    <span class="ti"><span class="td"></span>REACT · HTML · CSS</span>
+    <span class="ti"><span class="td"></span>USABILITY TESTING</span>
+    <span class="ti"><span class="td"></span>VIDEO EDITING</span>
+    <span class="ti"><span class="td"></span>UI/UX DESIGN</span>
+    <span class="ti"><span class="td"></span>CONNECTSPHERE</span>
+    <span class="ti"><span class="td"></span>FLOWBUDGET</span>
+    <span class="ti"><span class="td"></span>FIGMA PROTOTYPING</span>
+    <span class="ti"><span class="td"></span>USER RESEARCH</span>
+    <span class="ti"><span class="td"></span>DESIGN SYSTEMS</span>
+    <span class="ti"><span class="td"></span>REACT · HTML · CSS</span>
+    <span class="ti"><span class="td"></span>USABILITY TESTING</span>
+    <span class="ti"><span class="td"></span>VIDEO EDITING</span>
+  </div>
+</div>
+
+<!-- ████ PROCESS ████ -->
+<section id="process" class="sec alt">
+  <div class="ey rv">Design Process</div>
+  <h2 class="sh rv">HOW I APPROACH<br/><em>every project</em></h2>
+  <p class="ssub rv">Human-centered design from research to validated product. Every decision is backed by real user data — no guesswork.</p>
+  <div class="proc-grid rv">
+    <div class="ps"><div class="ps-num">01 ——</div><span class="ps-ico">🔍</span><div class="ps-t">Empathize</div><div class="ps-d">User interviews, surveys &amp; competitor analysis. Understand real pain before touching Figma.</div><span class="ps-ch">Research</span></div>
+    <div class="ps"><div class="ps-num">02 ——</div><span class="ps-ico">🎯</span><div class="ps-t">Define</div><div class="ps-d">Personas, problem statements, journey maps. Turn research into one clear design challenge.</div><span class="ps-ch">Strategy</span></div>
+    <div class="ps"><div class="ps-num">03 ——</div><span class="ps-ico">💡</span><div class="ps-t">Ideate</div><div class="ps-d">Crazy 8s, user flows, IA. Generate many ideas before committing to the best direction.</div><span class="ps-ch">Concept</span></div>
+    <div class="ps"><div class="ps-num">04 ——</div><span class="ps-ico">🎨</span><div class="ps-t">Design</div><div class="ps-d">Wireframes → Design System → Hi-Fi → Prototype. Three fidelity rounds in Figma.</div><span class="ps-ch">Figma</span></div>
+    <div class="ps"><div class="ps-num">05 ——</div><span class="ps-ico">🧪</span><div class="ps-t">Test</div><div class="ps-d">Usability testing. Measure task completion, time-on-task, satisfaction score. Fix &amp; repeat.</div><span class="ps-ch">Validate</span></div>
+  </div>
+</section>
+
+<!-- ████ WORK ████ -->
+<section id="work" class="sec">
+  <div class="ey rv">Featured Work</div>
+  <h2 class="sh rv">TWO COMPLETE<br/><em>case studies</em></h2>
+  <p class="ssub rv">End-to-end UI/UX — research, wireframes, design systems, prototypes, usability testing. Expand each card to read the full study.</p>
+
+  <!-- ══ CONNECTSPHERE ══ -->
+  <div class="pcard rv" id="cs-card">
+    <div class="pc-grid">
+
+      <!-- CONTENT -->
+      <div class="pcc">
+        <div>
+          <div class="pc-badges">
+            <span class="pb" style="color:var(--a1);border-color:rgba(108,99,255,.3)">Social Media</span>
+            <span class="pb" style="color:var(--a3);border-color:rgba(63,219,168,.25)">Community App</span>
+            <span class="pb" style="color:var(--a4);border-color:rgba(255,209,102,.25)">Mobile + Web</span>
+          </div>
+          <div class="pc-idx">Case Study 01</div>
+          <div class="pc-name" style="color:var(--a1)">Connect<br/>Sphere</div>
+          <div class="pc-tag">Community-first social — connections over vanity metrics.</div>
+          <div class="pc-desc">Redesigning social media around genuine communities (Spheres) instead of follower counts. Achieved 91% onboarding completion and 87% user satisfaction in prototype testing.</div>
+          <div class="pc-meta">
+            <div><div class="pm-l">Role</div><div class="pm-v">UI/UX Designer</div></div>
+            <div><div class="pm-l">Duration</div><div class="pm-v">4 Weeks</div></div>
+            <div><div class="pm-l">Tools</div><div class="pm-v">Figma · Adobe XD</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="tabs-row" id="cs-tabs">
+            <button class="tb on" onclick="setTab('cs','ov',this)">Overview</button>
+            <button class="tb" onclick="setTab('cs','pr',this)">Process</button>
+            <button class="tb" onclick="setTab('cs','wf',this)">Wireframes</button>
+            <button class="tb" onclick="setTab('cs','ds',this)">System</button>
+          </div>
+
+          <div class="tp on" id="cs-ov">
+            <div class="mstrip">
+              <div class="mb"><div class="mb-n" style="color:var(--a1)">91%</div><div class="mb-l">Onboarding</div><div class="mb-c">↑ from 54%</div></div>
+              <div class="mb"><div class="mb-n" style="color:var(--a1)">87%</div><div class="mb-l">Satisfaction</div><div class="mb-c">↑ vs 61% avg</div></div>
+              <div class="mb"><div class="mb-n" style="color:var(--a1)">1:45</div><div class="mb-l">First post</div><div class="mb-c">↓ from 4:20</div></div>
+              <div class="mb"><div class="mb-n" style="color:var(--a1)">0</div><div class="mb-l">Nav errors</div><div class="mb-c">↓ from 6</div></div>
+            </div>
+          </div>
+
+          <div class="tp" id="cs-pr">
+            <div class="tl">
+              <div class="tli"><div class="tld f"></div><div class="tl-s">Stage 01 · Empathize</div><div class="tl-t">Research &amp; Discovery</div><div class="tl-d">Surveyed 40 users 18–35. Found 78% feel worse after social media. 92% want niche interest communities.</div><div class="tl-tags"><span class="tlt">5 Interviews</span><span class="tlt">40 Surveys</span><span class="tlt">Competitor Analysis</span></div></div>
+              <div class="tli"><div class="tld f"></div><div class="tl-s">Stage 02 · Define</div><div class="tl-t">Personas &amp; Problem</div><div class="tl-d">2 personas: Rohan (dev wanting niche community) and Priya (student needing feedback without comparison anxiety).</div><div class="tl-tags"><span class="tlt">2 Personas</span><span class="tlt">Problem Statement</span></div></div>
+              <div class="tli"><div class="tld f"></div><div class="tl-s">Stage 03–05 · Design → Test</div><div class="tl-t">Key Insight: Fewer Choices = More Completion</div><div class="tl-d">Reduced categories 40→12. Onboarding jumped 54%→91%. Built hi-fi prototype and tested with 8 participants.</div><div class="tl-tags"><span class="tlt">User Flow</span><span class="tlt">8 Wireframes</span><span class="tlt">Hi-Fi Prototype</span></div></div>
+            </div>
+          </div>
+
+          <div class="tp" id="cs-wf">
+            <div class="wfg">
+              <div class="wfc"><div class="wfl">01 · Onboarding</div><div class="wfb"><div class="wfp"><div class="wb" style="--h:3px;--w:22px;margin:0 auto 4px"></div><div class="wb d" style="--h:22px;--w:22px;border-radius:50%;margin:3px auto"></div><div class="wb d" style="--h:5px;--w:50%;margin:2px auto"></div><div class="wb" style="--h:4px;--w:75%;margin:2px auto"></div><div class="wb a" style="--h:14px;border-radius:7px;margin-top:6px"></div><div class="wb" style="--h:14px;border-radius:7px;margin-top:3px"></div></div></div></div>
+              <div class="wfc"><div class="wfl">02 · Interest Picker</div><div class="wfb"><div class="wfp"><div class="wb d" style="--h:5px;--w:55%;margin-bottom:5px"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:4px"><div class="wb a" style="--h:17px;border-radius:3px"></div><div class="wb" style="--h:17px;border-radius:3px"></div><div class="wb" style="--h:17px;border-radius:3px"></div><div class="wb a" style="--h:17px;border-radius:3px"></div></div><div class="wb a" style="--h:13px;border-radius:7px"></div></div></div></div>
+              <div class="wfc"><div class="wfl">03 · Home Feed</div><div class="wfb"><div class="wfp"><div class="wbr"><div class="wbc" style="width:18px;height:18px"></div><div class="wbc" style="width:18px;height:18px;margin-left:2px"></div><div class="wbc" style="width:18px;height:18px;margin-left:2px"></div></div><div class="wbr" style="margin-top:3px"><div class="wbc" style="width:14px;height:14px"></div><div style="flex:1;margin-left:3px"><div class="wb d" style="--h:4px;margin-bottom:2px"></div><div class="wb" style="--h:3px;--w:50%"></div></div></div><div class="wb" style="--h:28px;margin:4px 0;border-radius:3px"></div><div class="wb" style="--h:3px;--w:88%"></div><div class="wbnav"><div class="wbnd"></div><div class="wbnd"></div><div class="wbnd" style="background:rgba(74,66,232,.4)"></div><div class="wbnd"></div><div class="wbnd"></div></div></div></div></div>
+              <div class="wfc"><div class="wfl">04 · Profile</div><div class="wfb"><div class="wfp"><div class="wb d" style="--h:22px;border-radius:0;margin:0"></div><div style="display:flex;justify-content:flex-end;gap:3px;margin-top:2px"><div class="wb a" style="--h:9px;--w:25px;border-radius:5px"></div><div class="wb" style="--h:9px;--w:18px;border-radius:5px"></div></div><div class="wb d" style="--h:4px;--w:42%;margin:3px 0"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;margin-top:4px"><div class="wb" style="--h:20px;border-radius:2px"></div><div class="wb" style="--h:20px;border-radius:2px"></div><div class="wb" style="--h:20px;border-radius:2px"></div></div><div class="wbnav"><div class="wbnd"></div><div class="wbnd"></div><div class="wbnd"></div><div class="wbnd" style="background:rgba(74,66,232,.4)"></div><div class="wbnd"></div></div></div></div></div>
+            </div>
+          </div>
+
+          <div class="tp" id="cs-ds">
+            <div class="dsg">
+              <div class="dsb"><div class="dsh">🎨 COLORS</div><div class="sw"><div class="swi"><div class="swc" style="background:#5B4FE8"></div><div class="swl">primary</div></div><div class="swi"><div class="swc" style="background:#FF6B6B"></div><div class="swl">coral</div></div><div class="swi"><div class="swc" style="background:#06C490"></div><div class="swl">success</div></div><div class="swi"><div class="swc" style="background:#0D0B1A;border:1px solid #333"></div><div class="swl">bg</div></div></div></div>
+              <div class="dsb"><div class="dsh">✍️ TYPE</div><div class="ts"><div class="tsr"><span class="tss">H1·40</span><span style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--ink)">ConnectSphere</span></div><div class="tsr"><span class="tss">Body·14</span><span style="font-size:.76rem;color:var(--ink2)">Post content</span></div><div class="tsr"><span class="tss">Mono·11</span><span style="font-family:'JetBrains Mono';font-size:.6rem;color:var(--muted)">@handle</span></div></div></div>
+              <div class="dsb"><div class="dsh">🧩 COMPONENTS</div><div style="display:flex;flex-direction:column;gap:7px;margin-top:4px"><div style="display:flex;gap:5px"><span style="background:#5B4FE8;color:#fff;padding:3px 10px;border-radius:5px;font-size:.64rem;font-weight:600">Follow</span><span style="border:1.5px solid #5B4FE8;color:#5B4FE8;padding:3px 10px;border-radius:5px;font-size:.64rem;font-weight:600">Message</span></div><div><span style="background:rgba(6,196,144,.1);color:#06C490;border:1px solid rgba(6,196,144,.2);padding:2px 8px;border-radius:20px;font-size:.55rem;font-family:'JetBrains Mono'">Online ●</span></div></div></div>
+            </div>
+          </div>
+
+          <div class="pc-acts">
+            <button class="exp-btn" id="cs-ebtn" onclick="toggleExp('cs')">Read Full Case Study <span class="exp-arr" id="cs-arr">↓</span></button>
+            <a href="prototype-connectsphere.html" target="_blank" class="act-g">▶ Prototype</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHONE VISUAL -->
+      <div class="pcv" style="background:linear-gradient(140deg,#0A0818 0%,#160D28 60%,#1E0D26 100%)">
+        <div class="vg" style="width:240px;height:240px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(91,79,232,.22),transparent 65%)"></div>
+        <div class="ph">
+          <div style="background:#0D0B1A;height:100%;display:flex;flex-direction:column">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px 6px">
+              <div style="font-family:'Bebas Neue';font-size:12px;color:#fff;letter-spacing:1px">CS<span style="color:#7B6EF5">.</span></div>
+              <div style="display:flex;gap:7px"><span style="width:20px;height:20px;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:8px">🔔</span><span style="width:20px;height:20px;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:8px">💬</span></div>
+            </div>
+            <div style="display:flex;gap:7px;padding:2px 12px 7px;overflow:hidden">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0"><div style="width:36px;height:36px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#7B6EF5,#F56E9A)"><div style="width:100%;height:100%;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid #0D0B1A">🎮</div></div><div style="font-size:5px;color:#5A5680">GameDev</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0"><div style="width:36px;height:36px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#FF6B6B,#FFB347)"><div style="width:100%;height:100%;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid #0D0B1A">🎨</div></div><div style="font-size:5px;color:#5A5680">Design</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0"><div style="width:36px;height:36px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#06C490,#5B4FE8)"><div style="width:100%;height:100%;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid #0D0B1A">💻</div></div><div style="font-size:5px;color:#5A5680">Tech</div></div>
+            </div>
+            <div style="height:1px;background:#2A2645;margin:0 10px"></div>
+            <div style="background:#1A1730;border-radius:11px;margin:5px 9px;padding:9px;border:1px solid #2A2645">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px"><div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#06C490,#7B6EF5);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">R</div><div><div style="font-size:7.5px;font-weight:700;color:#fff">Rohan Kumar</div><div style="font-size:5.5px;color:#7B6EF5">GameDev Sphere</div></div><div style="margin-left:auto;font-size:5px;color:#4A4470">2m ago</div></div>
+              <div style="height:58px;border-radius:7px;background:linear-gradient(135deg,#1a0d2e,#2a1545);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:5px">🎮</div>
+              <div style="font-size:6px;color:#9A9698;line-height:1.4;margin-bottom:5px">Just shipped v0.3 of my indie platformer! Jump physics finally feel right 🎉</div>
+              <div style="display:flex;gap:9px"><span style="font-size:5.5px;color:#FF6B6B">❤️ 48</span><span style="font-size:5.5px;color:#5A5680">💬 12</span><span style="font-size:5.5px;color:#5A5680">🔁 5</span></div>
+            </div>
+            <div style="background:#1A1730;border-radius:11px;margin:3px 9px;padding:8px;border:1px solid #2A2645">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px"><div style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FFB347);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff">P</div><div><div style="font-size:7px;font-weight:700;color:#fff">Priya Sharma</div><div style="font-size:5px;color:#FF6B6B">Design Sphere</div></div></div>
+              <div style="font-size:5.5px;color:#9A9698;line-height:1.4">Finished my Figma design system — sharing with community! 🙏</div>
+              <div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:5px;color:#FF6B6B">❤️ 124</span><span style="font-size:5px;color:#5A5680">💬 31</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-around;align-items:center;padding:6px 0 8px;background:#1A1730;border-top:1px solid #2A2645;margin-top:auto">
+              <div style="text-align:center;font-size:5px;color:#7B6EF5">🏠<br/>Feed</div>
+              <div style="text-align:center;font-size:5px;color:#4A4470">🌐<br/>Spheres</div>
+              <div style="width:28px;height:28px;border-radius:8px;background:#7B6EF5;display:flex;align-items:center;justify-content:center;font-size:12px;margin-top:-8px;color:#fff">＋</div>
+              <div style="text-align:center;font-size:5px;color:#4A4470">🔔<br/>Notifs</div>
+              <div style="text-align:center;font-size:5px;color:#4A4470">👤<br/>Profile</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CS FULL CASE STUDY ══ -->
+    <div class="cex" id="cs-expand">
+      <div class="cdiv"></div>
+
+      <!-- 01 OVERVIEW -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 01 &nbsp;Overview</div>
+        <h3 class="csh" style="color:var(--a1)">WHAT IS CONNECTSPHERE?</h3>
+        <p class="csp">ConnectSphere is a social media platform built around meaningful communities — not individual vanity metrics. Users join "Spheres" (topic-based communities) and engage through posts, live Q&As, and collaborative projects.</p>
+        <p class="csp"><strong style="color:var(--ink)">Core insight: people don't want more followers — they want to find their people.</strong></p>
+        <div class="ovg">
+          <div class="ovb"><div class="ovi">🎯</div><div class="ovl">Primary Goal</div><div class="ovv">Reduce isolation, increase genuine connection</div></div>
+          <div class="ovb"><div class="ovi">👥</div><div class="ovl">Target Users</div><div class="ovv">18–35, interest-driven</div></div>
+          <div class="ovb"><div class="ovi">📱</div><div class="ovl">Platforms</div><div class="ovv">iOS · Android · Web</div></div>
+          <div class="ovb"><div class="ovi">🏆</div><div class="ovl">Key Outcome</div><div class="ovv">87% satisfaction in testing</div></div>
+        </div>
+      </div>
+
+      <!-- 02 PROBLEM/SOLUTION -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 02 &nbsp;Problem &amp; Solution</div>
+        <h3 class="csh">THE PROBLEM I SOLVED</h3>
+        <p class="csp">Existing social media optimises for engagement time, not user wellbeing — creating a toxic cycle of comparison, doomscrolling, and shallow interaction.</p>
+        <div class="psd">
+          <div class="psc pr"><div class="psi">😔</div><div class="pst">The Problems</div><ul class="psul"><li>Algorithm-driven feeds promote outrage over connection</li><li>Follower counts used as proxy for self-worth</li><li>No way to find niche interest communities</li><li>Content from strangers drowns close connections</li><li>No digital wellbeing tools built in</li></ul></div>
+          <div class="psc sl"><div class="psi">✨</div><div class="pst">ConnectSphere's Solutions</div><ul class="psul"><li>Interest-based Spheres replace algorithmic feeds</li><li>Community reputation replaces follower counts</li><li>Sphere matching surfaces relevant communities</li><li>Separate close-friends and community feeds</li><li>Built-in mindful usage dashboard</li></ul></div>
+        </div>
+      </div>
+
+      <!-- 03 PERSONAS -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 03 &nbsp;User Research</div>
+        <h3 class="csh">UNDERSTANDING THE USERS</h3>
+        <p class="csp">5 user interviews + 40-person survey (18–35 yr). Key: 78% feel social media makes them feel worse. 92% want to find people who share niche interests.</p>
+        <div class="peg">
+          <div class="pec"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--a1);border-radius:13px 13px 0 0"></div><div class="peav" style="background:var(--a1t)">👨‍💻</div><div class="pen">Rohan, 24</div><div class="per">Software Developer · Hyderabad</div><div class="petg"><span class="pett">Tech</span><span class="pett">Gaming</span><span class="pett">Introvert</span><span class="pett">Creator</span></div><div class="peb"><strong>Goal</strong>Find people who share indie game dev passion. Share projects without being judged by follower count.</div><div class="peq">😤 "I post on Instagram but nobody cares about game dev. Feels like shouting into a void."</div></div>
+          <div class="pec"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--a2);border-radius:13px 13px 0 0"></div><div class="peav" style="background:var(--a2t)">👩‍🎨</div><div class="pen">Priya, 21</div><div class="per">Design Student · Bengaluru</div><div class="petg"><span class="pett">Design</span><span class="pett">Art</span><span class="pett">Anxious</span><span class="pett">Learner</span></div><div class="peb"><strong>Goal</strong>Get feedback on design work. Find a mentor. Stop comparing herself to senior designers.</div><div class="peq">😤 "I open Instagram for feedback and spend 2 hours feeling terrible about my skill level."</div></div>
+        </div>
+      </div>
+
+      <!-- 04 USER FLOW -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 04 &nbsp;User Flow</div>
+        <h3 class="csh">CORE USER JOURNEY</h3>
+        <p class="csp">Mapped the primary flow: new user onboarding → Sphere discovery → joining → posting → engaging with community.</p>
+        <div class="flb">
+          <div style="font-family:'JetBrains Mono';font-size:.62rem;color:var(--muted);margin-bottom:12px">PRIMARY FLOW — New User → First Post</div>
+          <div class="flr"><div class="fn st" style="background:var(--a1)">App Open</div><div class="fa"></div><div class="fn dc">Has Account?</div><div class="fa"></div><div class="fn">Sign Up</div><div class="fa"></div><div class="fn">Pick Interests</div><div class="fa"></div><div class="fn">Sphere Match</div><div class="fa"></div><div class="fn">Join Sphere</div><div class="fa"></div><div class="fn en" style="background:var(--a3)">First Post ✓</div></div>
+          <div class="fln" style="border-left-color:var(--a1);background:var(--a1t);margin-top:12px"><strong style="color:var(--a1)">KEY TESTING INSIGHT</strong>Users dropped off at "Pick Interests" when there were too many options. Reduced categories 40→12. Completion: 54%→91%.</div>
+        </div>
+      </div>
+
+      <!-- 05 HI-FI -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 05 &nbsp;High-Fidelity Screens</div>
+        <h3 class="csh">FINAL PROTOTYPE</h3>
+        <p class="csp">Dark theme chosen after testing: 8/8 participants preferred it for social media. Reduces cognitive load and aligns with the mindful usage goal.</p>
+        <div class="hfg">
+          <div class="hfi">
+            <div style="background:linear-gradient(160deg,#0D0B1A,#1A0D2E);padding:26px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:280px;justify-content:center">
+              <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#5B4FE8,#FF6B6B);display:flex;align-items:center;justify-content:center;font-size:1.7rem;margin-bottom:12px;box-shadow:0 0 30px rgba(91,79,232,.4)">🌐</div>
+              <div style="font-family:'Bebas Neue';font-size:1.25rem;color:#fff;margin-bottom:4px">Connect<span style="color:#7B6EF5">Sphere</span></div>
+              <div style="font-family:'JetBrains Mono';font-size:.56rem;color:rgba(255,255,255,.3);margin-bottom:16px">// find your people</div>
+              <div style="font-size:.78rem;font-weight:600;color:#fff;margin-bottom:5px;line-height:1.3">Join communities that<br/>actually get you.</div>
+              <div style="font-size:.64rem;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:15px">Interest-based Spheres for genuine connection.</div>
+              <div style="background:#5B4FE8;color:#fff;padding:8px 22px;border-radius:20px;font-size:.7rem;font-weight:600">Get Started →</div>
+            </div>
+            <div class="hfl">Screen 01 · Onboarding</div>
+          </div>
+          <div class="hfi">
+            <div style="background:#0D0B1A;min-height:280px;display:flex;flex-direction:column">
+              <div style="padding:9px 12px 5px;display:flex;justify-content:space-between;align-items:center"><div style="font-family:'Bebas Neue';font-size:11px;color:#fff;letter-spacing:1px">CS<span style="color:#7B6EF5">.</span></div><div style="display:flex;gap:6px"><span style="font-size:.6rem">🔔</span><span style="font-size:.6rem">💬</span></div></div>
+              <div style="display:flex;gap:7px;padding:2px 12px 7px;overflow:hidden"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:32px;height:32px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#7B6EF5,#F56E9A)"><div style="width:100%;height:100%;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:9px;border:2px solid #0D0B1A">🎮</div></div><div style="font-size:4.5px;color:#5A5680">Game</div></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:32px;height:32px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#FF6B6B,#FFB347)"><div style="width:100%;height:100%;border-radius:50%;background:#1A1730;display:flex;align-items:center;justify-content:center;font-size:9px;border:2px solid #0D0B1A">🎨</div></div><div style="font-size:4.5px;color:#5A5680">Design</div></div></div>
+              <div style="background:#1A1730;border-radius:10px;margin:4px 9px;padding:8px;border:1px solid #2A2645"><div style="display:flex;align-items:center;gap:5px;margin-bottom:5px"><div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#06C490,#7B6EF5);display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:700">R</div><div><div style="font-size:7px;font-weight:700;color:#fff">Rohan Kumar</div><div style="font-size:5px;color:#7B6EF5">GameDev Sphere</div></div></div><div style="height:52px;border-radius:6px;background:linear-gradient(135deg,#1a0d2e,#2a1545);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:4px">🎮</div><div style="font-size:5.5px;color:#9A9698">Shipped v0.3! 🎉</div><div style="display:flex;gap:7px;margin-top:3px"><span style="font-size:5px;color:#FF6B6B">❤️ 48</span><span style="font-size:5px;color:#5A5680">💬 12</span></div></div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:5px 0 7px;background:#1A1730;border-top:1px solid #2A2645;margin-top:auto"><div style="font-size:4.5px;color:#7B6EF5;text-align:center">🏠<br/>Feed</div><div style="font-size:4.5px;color:#5A5680;text-align:center">🌐<br/>Spheres</div><div style="width:24px;height:24px;border-radius:7px;background:#7B6EF5;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:-7px">＋</div><div style="font-size:4.5px;color:#5A5680;text-align:center">🔔<br/>Notifs</div><div style="font-size:4.5px;color:#5A5680;text-align:center">👤<br/>Profile</div></div>
+            </div>
+            <div class="hfl">Screen 02 · Home Feed</div>
+          </div>
+          <div class="hfi">
+            <div style="background:#0D0B1A;min-height:280px;display:flex;flex-direction:column">
+              <div style="height:60px;background:linear-gradient(135deg,#5B4FE8,#FF6B6B);position:relative"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#06C490,#FFB347);border:3px solid #0D0B1A;position:absolute;bottom:-21px;left:12px;display:flex;align-items:center;justify-content:center;font-size:1rem">👨‍💻</div></div>
+              <div style="display:flex;justify-content:flex-end;gap:4px;padding:4px 10px 0"><div style="background:#5B4FE8;color:#fff;padding:3px 9px;border-radius:13px;font-size:.56rem;font-weight:600">Follow</div><div style="background:#1A1730;color:rgba(255,255,255,.5);padding:3px 9px;border-radius:13px;font-size:.56rem;border:1px solid #2A2645">Msg</div></div>
+              <div style="padding:24px 12px 8px"><div style="font-size:.76rem;font-weight:700;color:#fff">Rohan Kumar</div><div style="font-size:.54rem;color:rgba(255,255,255,.3);font-family:'JetBrains Mono';margin-bottom:5px">@rohan.builds</div><div style="display:flex;gap:10px;margin-bottom:7px"><div style="text-align:center"><div style="font-size:.75rem;font-weight:800;color:#fff">248</div><div style="font-size:.44rem;color:rgba(255,255,255,.3)">Posts</div></div><div style="text-align:center"><div style="font-size:.75rem;font-weight:800;color:#fff">1.2K</div><div style="font-size:.44rem;color:rgba(255,255,255,.3)">Rep</div></div><div style="text-align:center"><div style="font-size:.75rem;font-weight:800;color:#fff">5</div><div style="font-size:.44rem;color:rgba(255,255,255,.3)">Spheres</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px"><div style="aspect-ratio:1;background:linear-gradient(135deg,#1a0d2e,#2a1545);border-radius:2px;display:flex;align-items:center;justify-content:center">🎮</div><div style="aspect-ratio:1;background:linear-gradient(135deg,#0d1a0d,#1a2e1a);border-radius:2px;display:flex;align-items:center;justify-content:center">🌲</div><div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a0d,#2e2a0d);border-radius:2px;display:flex;align-items:center;justify-content:center">⚡</div></div></div>
+              <div style="display:flex;justify-content:space-around;align-items:center;padding:5px 0 7px;background:#1A1730;border-top:1px solid #2A2645;margin-top:auto"><div style="font-size:4.5px;color:#5A5680;text-align:center">🏠<br/>Feed</div><div style="font-size:4.5px;color:#5A5680;text-align:center">🌐<br/>Spheres</div><div style="width:24px;height:24px;border-radius:7px;background:#7B6EF5;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:-7px">＋</div><div style="font-size:4.5px;color:#5A5680;text-align:center">🔔<br/>Notifs</div><div style="font-size:4.5px;color:#7B6EF5;text-align:center">👤<br/>Profile</div></div>
+            </div>
+            <div class="hfl">Screen 03 · User Profile</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 METRICS -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 06 &nbsp;Testing Results</div>
+        <h3 class="csh">WHAT THE DATA SHOWED</h3>
+        <p class="csp">Usability testing with 8 participants. Tasks: complete onboarding, find and join a Sphere, make a post.</p>
+        <div class="metg">
+          <div class="metc"><div class="metn" style="color:var(--a1)">91%</div><div class="metl">Onboarding completion</div><div class="metc2">↑ from 54% in v1</div></div>
+          <div class="metc"><div class="metn" style="color:var(--a1)">87%</div><div class="metl">User satisfaction</div><div class="metc2">↑ vs 61% avg</div></div>
+          <div class="metc"><div class="metn" style="color:var(--a1)">1:45</div><div class="metl">Time to first post</div><div class="metc2">↓ from 4:20 in v1</div></div>
+          <div class="metc"><div class="metn" style="color:var(--a1)">0</div><div class="metl">Critical nav errors</div><div class="metc2">↓ from 6 in v1</div></div>
+        </div>
+      </div>
+
+      <!-- 07 LEARNINGS -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 07 &nbsp;Key Learnings</div>
+        <h3 class="csh">WHAT I LEARNED</h3>
+        <div class="leg">
+          <div class="lec"><div class="lei">🔍</div><div class="let">LESS IS MORE IN ONBOARDING</div><div class="led">Reducing categories 40→12 dramatically improved completion. Users want to be guided, not overwhelmed.</div></div>
+          <div class="lec"><div class="lei">🌙</div><div class="let">DARK THEME = PREFERENCE</div><div class="led">8/8 users preferred dark for social media. Reduces cognitive load and aligns with mindful usage goals.</div></div>
+          <div class="lec"><div class="lei">🏷️</div><div class="let">LABELS CHANGE BEHAVIOR</div><div class="led">Renaming "Followers" to "Sphere Rep" changed how users thought about the metric — less comparison anxiety.</div></div>
+        </div>
+      </div>
+
+      <!-- 08 FIGMA GUIDE -->
+      <div class="css2">
+        <div class="csl" style="color:var(--a1)">— 08 &nbsp;Figma Build Guide</div>
+        <h3 class="csh">HOW TO BUILD IN FIGMA</h3>
+        <div class="fgb" style="background:var(--a1t);border-color:rgba(108,99,255,.2)">
+          <div class="fgt">📐 File Structure — 4 Pages</div>
+          <div class="fgs">
+            <div class="fgsi"><div class="fgsn" style="color:var(--a1)">PAGE 1</div><div class="fgst">🎨 Design System</div><div class="fgsd">Color styles, text styles, components. All tokens here.</div><div class="fgcode" style="color:var(--a1)">primary/500 → #5B4FE8<br/>surface/bg → #0D0B1A</div></div>
+            <div class="fgsi"><div class="fgsn" style="color:var(--a1)">PAGE 2</div><div class="fgst">✏️ Wireframes</div><div class="fgsd">Frame 390×844. Gray fills only. Layout and hierarchy.</div><div class="fgcode" style="color:var(--a1)">Frame: 390 × 844<br/>Shapes: #D9D9D9</div></div>
+            <div class="fgsi"><div class="fgsn" style="color:var(--a1)">PAGE 3</div><div class="fgst">📱 Mobile Hi-Fi</div><div class="fgsd">Apply tokens. Auto Layout. 8px grid. Connect prototype flows.</div><div class="fgcode" style="color:var(--a1)">Grid: 8px base unit</div></div>
+            <div class="fgsi"><div class="fgsn" style="color:var(--a1)">PAGE 4</div><div class="fgst">🖥️ Web Hi-Fi</div><div class="fgsd">Desktop 1440×900. 12-column grid, 80px margins.</div><div class="fgcode" style="color:var(--a1)">Frame: 1440 × 900</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FLOWBUDGET ══ -->
+  <div class="pcard rv d1" id="fb-card">
+    <div class="pc-grid flip">
+
+      <!-- CONTENT -->
+      <div class="pcc">
+        <div>
+          <div class="pc-badges">
+            <span class="pb" style="color:var(--a3);border-color:rgba(63,219,168,.3)">Finance App</span>
+            <span class="pb" style="color:var(--a4);border-color:rgba(255,209,102,.25)">Budget Tracker</span>
+            <span class="pb" style="color:var(--a2);border-color:rgba(255,95,160,.22)">Mobile + Web</span>
+          </div>
+          <div class="pc-idx">Case Study 02</div>
+          <div class="pc-name" style="color:var(--a3)">Flow<br/>Budget</div>
+          <div class="pc-tag">Personal finance made effortless — log in 6.4 seconds.</div>
+          <div class="pc-desc">A mobile-first personal finance app where logging a transaction takes under 7 seconds. Traffic-light budget system gives instant clarity. Achieved 6.4s avg log time, zero mislogged transactions in testing.</div>
+          <div class="pc-meta">
+            <div><div class="pm-l">Role</div><div class="pm-v">UI/UX Designer</div></div>
+            <div><div class="pm-l">Duration</div><div class="pm-v">3 Weeks</div></div>
+            <div><div class="pm-l">Tools</div><div class="pm-v">Figma · Principle</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="tabs-row" id="fb-tabs">
+            <button class="tb on" onclick="setTab('fb','ov',this)">Overview</button>
+            <button class="tb" onclick="setTab('fb','pr',this)">Process</button>
+            <button class="tb" onclick="setTab('fb','wf',this)">Wireframes</button>
+            <button class="tb" onclick="setTab('fb','ds',this)">System</button>
+          </div>
+
+          <div class="tp on" id="fb-ov">
+            <div class="mstrip">
+              <div class="mb"><div class="mb-n" style="color:var(--a3)">6.4s</div><div class="mb-l">Avg log time</div><div class="mb-c">↓ from 38s</div></div>
+              <div class="mb"><div class="mb-n" style="color:var(--a3)">0</div><div class="mb-l">Mislogged</div><div class="mb-c">↓ from 4 errors</div></div>
+              <div class="mb"><div class="mb-n" style="color:var(--a3)">89%</div><div class="mb-l">Satisfaction</div><div class="mb-c">↑ from 52%</div></div>
+              <div class="mb"><div class="mb-n" style="color:var(--a3)">94%</div><div class="mb-l">Task success</div><div class="mb-c">↑ from 61%</div></div>
+            </div>
+          </div>
+
+          <div class="tp" id="fb-pr">
+            <div class="tl">
+              <div class="tli"><div class="tld f" style="border-color:var(--a3)"></div><div class="tl-s" style="color:var(--a3)">Stage 01 · Empathize</div><div class="tl-t">Research &amp; Pain Points</div><div class="tl-d">Interviewed 8 users. Found: apps are slow, categories too complex, no instant budget clarity.</div><div class="tl-tags"><span class="tlt" style="background:var(--a3t);border-color:rgba(63,219,168,.14);color:var(--a3)">8 Interviews</span><span class="tlt" style="background:var(--a3t);border-color:rgba(63,219,168,.14);color:var(--a3)">Competitor Audit</span></div></div>
+              <div class="tli"><div class="tld f" style="border-color:var(--a3);background:var(--a3)"></div><div class="tl-s" style="color:var(--a3)">Stage 02–03 · Define &amp; Ideate</div><div class="tl-t">Speed-First Design Principle</div><div class="tl-d">Set 7s target for transaction logging. Designed numpad-first UI. Quick-pick categories cut taps by 60%.</div><div class="tl-tags"><span class="tlt" style="background:var(--a3t);border-color:rgba(63,219,168,.14);color:var(--a3)">2 Personas</span><span class="tlt" style="background:var(--a3t);border-color:rgba(63,219,168,.14);color:var(--a3)">User Flow</span></div></div>
+              <div class="tli"><div class="tld f" style="border-color:var(--a3);background:var(--a3)"></div><div class="tl-s" style="color:var(--a3)">Stage 04–05 · Design → Test</div><div class="tl-t">Traffic-Light System Validated</div><div class="tl-d">Green/amber/red budget bars gave instant clarity. Users understood status without reading numbers.</div><div class="tl-tags"><span class="tlt" style="background:var(--a3t);border-color:rgba(63,219,168,.14);color:var(--a3)">Hi-Fi Prototype</span><span class="tlt" style="background:var(--a3t);border-color:rgba(63,219,168,.14);color:var(--a3)">8 Participants</span></div></div>
+            </div>
+          </div>
+
+          <div class="tp" id="fb-wf">
+            <div class="wfg">
+              <div class="wfc"><div class="wfl">01 · Dashboard</div><div class="wfb"><div class="wfp"><div class="wb d" style="--h:4px;--w:55%;margin-bottom:4px"></div><div class="wb g" style="--h:18px;border-radius:6px;margin-bottom:4px"></div><div class="wb" style="--h:3px;--w:75%;margin-bottom:5px"></div><div class="wb g" style="--h:8px;border-radius:3px;margin-bottom:2px"></div><div class="wb" style="--h:8px;border-radius:3px;--w:65%;margin-bottom:2px"></div><div class="wb r" style="--h:8px;border-radius:3px;--w:40%"></div></div></div></div>
+              <div class="wfc"><div class="wfl">02 · Add Transaction</div><div class="wfb"><div class="wfp"><div class="wb d" style="--h:16px;border-radius:5px;margin-bottom:5px"></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:3px"><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div><div class="wb" style="--h:12px;border-radius:3px"></div></div><div class="wb g" style="--h:13px;border-radius:7px"></div></div></div></div>
+              <div class="wfc"><div class="wfl">03 · Budget Tracker</div><div class="wfb"><div class="wfp"><div class="wb d" style="--h:4px;--w:42%;margin-bottom:6px"></div><div style="display:flex;flex-direction:column;gap:3px"><div class="wbr" style="align-items:center"><div class="wb d" style="--h:4px;--w:30%;margin-bottom:0;flex-shrink:0"></div><div style="flex:1;height:6px;border-radius:3px;background:#E0E0E0;margin-left:5px"><div style="width:80%;height:100%;border-radius:3px;background:rgba(14,158,110,.4)"></div></div></div><div class="wbr" style="align-items:center"><div class="wb d" style="--h:4px;--w:30%;margin-bottom:0;flex-shrink:0"></div><div style="flex:1;height:6px;border-radius:3px;background:#E0E0E0;margin-left:5px"><div style="width:60%;height:100%;border-radius:3px;background:rgba(176,112,0,.35)"></div></div></div><div class="wbr" style="align-items:center"><div class="wb d" style="--h:4px;--w:30%;margin-bottom:0;flex-shrink:0"></div><div style="flex:1;height:6px;border-radius:3px;background:#E0E0E0;margin-left:5px"><div style="width:95%;height:100%;border-radius:3px;background:rgba(217,53,128,.35)"></div></div></div></div></div></div></div>
+              <div class="wfc"><div class="wfl">04 · Web Dashboard</div><div class="wfb"><div class="wfp"><div style="display:flex;gap:2px;height:55px"><div style="width:22px;background:#E0E0E0;border-radius:3px;flex-shrink:0"></div><div style="flex:1"><div class="wb d" style="--h:4px;margin-bottom:4px"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px"><div class="wb g" style="--h:10px;border-radius:3px"></div><div class="wb" style="--h:10px;border-radius:3px"></div><div class="wb" style="--h:10px;border-radius:3px"></div><div class="wb" style="--h:10px;border-radius:3px"></div></div></div></div></div></div></div>
+            </div>
+          </div>
+
+          <div class="tp" id="fb-ds">
+            <div class="dsg">
+              <div class="dsb"><div class="dsh">🎨 COLORS</div><div class="sw"><div class="swi"><div class="swc" style="background:#1DB954"></div><div class="swl">safe</div></div><div class="swi"><div class="swc" style="background:#FFB800"></div><div class="swl">warning</div></div><div class="swi"><div class="swc" style="background:#FF4444"></div><div class="swl">over</div></div><div class="swi"><div class="swc" style="background:#0A1A0F;border:1px solid #333"></div><div class="swl">bg</div></div></div></div>
+              <div class="dsb"><div class="dsh">✍️ TYPE</div><div class="ts"><div class="tsr"><span class="tss">Display</span><span style="font-family:'DM Serif Display';font-style:italic;font-size:1rem;color:var(--ink)">₹24,350</span></div><div class="tsr"><span class="tss">Body·14</span><span style="font-size:.76rem;color:var(--ink2)">Transaction name</span></div><div class="tsr"><span class="tss">Mono·11</span><span style="font-family:'JetBrains Mono';font-size:.6rem;color:var(--muted)">category</span></div></div></div>
+              <div class="dsb"><div class="dsh">🧩 BUDGET STATES</div><div style="display:flex;flex-direction:column;gap:6px;margin-top:4px"><div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:50%;background:#1DB954;flex-shrink:0"></div><div style="font-size:.72rem;color:var(--ink2)">Safe (0–75%)</div></div><div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:50%;background:#FFB800;flex-shrink:0"></div><div style="font-size:.72rem;color:var(--ink2)">Warning (75–100%)</div></div><div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:50%;background:#FF4444;flex-shrink:0"></div><div style="font-size:.72rem;color:var(--ink2)">Over Budget</div></div></div></div>
+            </div>
+          </div>
+
+          <div class="pc-acts">
+            <button class="exp-btn" id="fb-ebtn" onclick="toggleExp('fb')">Read Full Case Study <span class="exp-arr" id="fb-arr">↓</span></button>
+            <a href="prototype-flowbudget.html" target="_blank" class="act-g">▶ Prototype</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHONE VISUAL -->
+      <div class="pcv" style="background:linear-gradient(140deg,#071209 0%,#0D1E0F 60%,#0F1E12 100%)">
+        <div class="vg" style="width:230px;height:230px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(29,185,84,.18),transparent 65%)"></div>
+        <div class="ph">
+          <div style="background:#0A1A0F;height:100%;display:flex;flex-direction:column">
+            <div style="padding:9px 13px 6px;display:flex;justify-content:space-between;align-items:center">
+              <div style="font-family:'Bebas Neue';font-size:11px;color:#fff;letter-spacing:1px">FB<span style="color:#1DB954">.</span></div>
+              <div style="font-family:'JetBrains Mono';font-size:5.5px;color:rgba(255,255,255,.3)">March 2025</div>
+            </div>
+            <div style="margin:4px 12px 10px;background:#122018;border-radius:14px;padding:14px;border:1px solid #1E3028">
+              <div style="font-family:'JetBrains Mono';font-size:5.5px;color:rgba(255,255,255,.3);margin-bottom:3px">TOTAL SPENT</div>
+              <div style="font-family:'DM Serif Display';font-style:italic;font-size:1.5rem;color:#fff;line-height:1;margin-bottom:2px">₹18,420</div>
+              <div style="font-family:'JetBrains Mono';font-size:5px;color:rgba(255,255,255,.3)">of ₹30,000 budget</div>
+              <div style="height:4px;background:#1E3028;border-radius:2px;margin-top:8px"><div style="width:61%;height:100%;border-radius:2px;background:#1DB954"></div></div>
+            </div>
+            <div style="font-family:'JetBrains Mono';font-size:5.5px;color:rgba(255,255,255,.3);padding:0 13px;margin-bottom:5px">BUDGET TRACKER</div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding:0 12px">
+              <div style="background:#122018;border-radius:8px;padding:7px 10px;border:1px solid #1E3028">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:6.5px;font-weight:600;color:#fff">🍕 Food</div><div style="font-size:5.5px;color:rgba(255,255,255,.4)">₹4,200/₹6,000</div></div>
+                <div style="height:4px;background:#1E3028;border-radius:2px"><div style="width:70%;height:100%;border-radius:2px;background:#1DB954"></div></div>
+              </div>
+              <div style="background:#122018;border-radius:8px;padding:7px 10px;border:1px solid #1E3028">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:6.5px;font-weight:600;color:#fff">🚌 Transport</div><div style="font-size:5.5px;color:rgba(255,255,255,.4)">₹1,800/₹2,000</div></div>
+                <div style="height:4px;background:#1E3028;border-radius:2px"><div style="width:90%;height:100%;border-radius:2px;background:#FFB800"></div></div>
+              </div>
+              <div style="background:#122018;border-radius:8px;padding:7px 10px;border:1px solid rgba(255,68,68,.2)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:6.5px;font-weight:600;color:#fff">🛍️ Shopping</div><div style="font-size:5.5px;color:rgba(255,68,68,.7)">₹3,100/₹3,000</div></div>
+                <div style="height:4px;background:#1E3028;border-radius:2px"><div style="width:100%;height:100%;border-radius:2px;background:#FF4444"></div></div>
+              </div>
+            </div>
+            <div style="margin:8px 12px 0;background:#1DB954;border-radius:10px;padding:8px;display:flex;align-items:center;justify-content:center;gap:5px">
+              <div style="font-size:9px;color:#fff">＋</div>
+              <div style="font-size:6.5px;font-weight:700;color:#fff">Add Transaction</div>
+            </div>
+            <div style="display:flex;justify-content:space-around;align-items:center;padding:7px 0 9px;background:#122018;border-top:1px solid #1E3028;margin-top:auto">
+              <div style="text-align:center;font-size:5px;color:#1DB954">🏠<br/>Home</div>
+              <div style="text-align:center;font-size:5px;color:rgba(255,255,255,.3)">📊<br/>Budget</div>
+              <div style="text-align:center;font-size:5px;color:rgba(255,255,255,.3)">📋<br/>History</div>
+              <div style="text-align:center;font-size:5px;color:rgba(255,255,255,.3)">⚙️<br/>Settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FB FULL CASE STUDY ══ -->
+    <div class="cex" id="fb-expand">
+      <div class="cdiv"></div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 01 &nbsp;Overview</div>
+        <h3 class="csh" style="color:var(--a3)">WHAT IS FLOWBUDGET?</h3>
+        <p class="csp">FlowBudget is a personal finance app designed around speed and clarity. The core promise: logging any transaction in under 7 seconds. Traffic-light budget bars give instant status without reading numbers.</p>
+        <div class="ovg">
+          <div class="ovb"><div class="ovi">⚡</div><div class="ovl">Primary Goal</div><div class="ovv">Sub-7s transaction logging</div></div>
+          <div class="ovb"><div class="ovi">👥</div><div class="ovl">Target Users</div><div class="ovv">22–35 yr, salaried, India</div></div>
+          <div class="ovb"><div class="ovi">📱</div><div class="ovl">Platforms</div><div class="ovv">iOS · Android · Web</div></div>
+          <div class="ovb"><div class="ovi">🏆</div><div class="ovl">Key Outcome</div><div class="ovv">6.4s avg, 0 mislogged</div></div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 02 &nbsp;Problem &amp; Solution</div>
+        <h3 class="csh">THE PROBLEM I SOLVED</h3>
+        <p class="csp">Existing finance apps require too many taps, too many decisions, and deliver no instant budget clarity — so users log inconsistently and lose financial awareness.</p>
+        <div class="psd">
+          <div class="psc pr"><div class="psi">😤</div><div class="pst">The Problems</div><ul class="psul"><li>Average transaction log took 38+ seconds</li><li>Complex category hierarchies caused confusion</li><li>No immediate visual of budget status</li><li>Users abandoned mid-session, causing data gaps</li><li>No difference between phone/web experience</li></ul></div>
+          <div class="psc sl"><div class="psi">⚡</div><div class="pst">FlowBudget's Solutions</div><ul class="psul"><li>Numpad-first UI — amount in 2 taps</li><li>12 quick-pick categories with emoji icons</li><li>Traffic-light bars: green/amber/red at a glance</li><li>One-swipe confirmation, no modal dialogs</li><li>Sidebar web dashboard synced in real time</li></ul></div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 03 &nbsp;User Research</div>
+        <h3 class="csh">UNDERSTANDING THE USERS</h3>
+        <p class="csp">8 user interviews. Key findings: users abandoned logging when it took more than 10 taps. All wanted to see budget health without opening the app.</p>
+        <div class="peg">
+          <div class="pec"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--a3);border-radius:13px 13px 0 0"></div><div class="peav" style="background:var(--a3t)">💼</div><div class="pen">Karthik, 26</div><div class="per">Software Engineer · Chennai</div><div class="petg"><span class="pett">Salaried</span><span class="pett">Busy</span><span class="pett">Planner</span><span class="pett">Android</span></div><div class="peb"><strong>Goal</strong>Track every expense without disrupting his workflow. See if he's on budget while standing at a cashier.</div><div class="peq">😤 "I open the app, see 5 screens before I can log ₹50 for chai. I just stopped tracking."</div></div>
+          <div class="pec"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--a4);border-radius:13px 13px 0 0"></div><div class="peav" style="background:var(--a4t)">📚</div><div class="pen">Asha, 22</div><div class="per">MBA Student · Hyderabad</div><div class="petg"><span class="pett">Student</span><span class="pett">Budget-conscious</span><span class="pett">iOS</span></div><div class="peb"><strong>Goal</strong>Understand where her stipend goes each month. Get an alert before overspending a category.</div><div class="peq">😤 "I know I overspent on food but I don't know by how much until it's too late to adjust."</div></div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 04 &nbsp;User Flow</div>
+        <h3 class="csh">SPEED-OPTIMISED JOURNEY</h3>
+        <p class="csp">The core flow is engineered for minimum taps. Target was 7 seconds from open to confirmation. Achieved 6.4s average in testing.</p>
+        <div class="flb">
+          <div style="font-family:'JetBrains Mono';font-size:.62rem;color:var(--muted);margin-bottom:12px">CORE FLOW — Open → Log Transaction (target: &lt;7s)</div>
+          <div class="flr"><div class="fn st" style="background:var(--a3)">App Open</div><div class="fa"></div><div class="fn">Dashboard</div><div class="fa"></div><div class="fn">+ Button</div><div class="fa"></div><div class="fn">Numpad</div><div class="fa"></div><div class="fn dc">Pick Category</div><div class="fa"></div><div class="fn">Confirm Swipe</div><div class="fa"></div><div class="fn en" style="background:var(--a3)">Logged ✓ 6.4s</div></div>
+          <div class="fln" style="border-left-color:var(--a3);background:var(--a3t);margin-top:12px"><strong style="color:var(--a3)">SPEED DESIGN INSIGHT</strong>Moving from text input to numpad reduced input time by 70%. Quick-pick categories cut category-selection taps from 8→2.</div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 05 &nbsp;High-Fidelity Screens</div>
+        <h3 class="csh">FINAL PROTOTYPE</h3>
+        <p class="csp">Dark forest green theme. Traffic-light system proved instantly intuitive — 8/8 users understood budget status without explanation.</p>
+        <div class="hfg">
+          <div class="hfi">
+            <div style="background:#0A1A0F;min-height:280px;display:flex;flex-direction:column;padding:14px">
+              <div style="font-family:'JetBrains Mono';font-size:5.5px;color:rgba(255,255,255,.3);margin-bottom:5px">TOTAL SPENT — MARCH</div>
+              <div style="font-family:'DM Serif Display';font-style:italic;font-size:1.8rem;color:#fff;line-height:1;margin-bottom:3px">₹18,420</div>
+              <div style="font-size:6px;color:rgba(255,255,255,.3);margin-bottom:10px">of ₹30,000 budget</div>
+              <div style="height:5px;background:#1E3028;border-radius:3px;margin-bottom:12px"><div style="width:61%;height:100%;border-radius:3px;background:#1DB954"></div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px"><div style="background:#122018;border-radius:9px;padding:9px;border:1px solid #1E3028"><div style="font-size:5.5px;color:rgba(255,255,255,.3);margin-bottom:2px">SAVED</div><div style="font-family:'DM Serif Display';font-style:italic;font-size:1rem;color:#1DB954">₹11,580</div></div><div style="background:#122018;border-radius:9px;padding:9px;border:1px solid #1E3028"><div style="font-size:5.5px;color:rgba(255,255,255,.3);margin-bottom:2px">THIS WEEK</div><div style="font-family:'DM Serif Display';font-style:italic;font-size:1rem;color:#fff">₹3,240</div></div></div>
+              <div style="background:#1DB954;border-radius:9px;padding:8px;display:flex;align-items:center;justify-content:center;gap:4px"><div style="font-size:8px;color:#fff">＋</div><div style="font-size:6.5px;font-weight:700;color:#fff">Add Transaction</div></div>
+            </div>
+            <div class="hfl">Screen 01 · Dashboard</div>
+          </div>
+          <div class="hfi">
+            <div style="background:#0A1A0F;min-height:280px;display:flex;flex-direction:column">
+              <div style="padding:10px 14px 8px;display:flex;align-items:center;gap:8px"><div style="font-size:9px;color:rgba(255,255,255,.4)">←</div><div style="font-family:'Bebas Neue';font-size:11px;color:#fff;letter-spacing:1px">ADD TRANSACTION</div></div>
+              <div style="margin:0 12px 8px;background:#122018;border-radius:10px;padding:10px;border:1px solid #1E3028;text-align:center"><div style="font-family:'DM Serif Display';font-style:italic;font-size:1.6rem;color:#fff">₹0</div><div style="font-size:5.5px;color:rgba(255,255,255,.3)">tap amount below</div></div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:0 12px;margin-bottom:6px">
+                <div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">🍕</div><div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">🚌</div><div style="background:#1DB954;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">🛍️</div><div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">💊</div>
+                <div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">☕</div><div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">🎮</div><div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">💡</div><div style="background:#122018;border-radius:5px;padding:4px 2px;text-align:center;font-size:9px">✈️</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 12px;margin-bottom:6px">
+                <div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">1</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">2</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">3</div>
+                <div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">4</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">5</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">6</div>
+                <div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">7</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">8</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">9</div>
+                <div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">.</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:#fff">0</div><div style="background:#122018;border-radius:5px;padding:7px 2px;text-align:center;font-size:.65rem;color:rgba(255,255,255,.4)">⌫</div>
+              </div>
+              <div style="margin:0 12px;background:#1DB954;border-radius:9px;padding:8px;display:flex;align-items:center;justify-content:center"><div style="font-size:6.5px;font-weight:700;color:#fff">Swipe to Confirm →</div></div>
+            </div>
+            <div class="hfl">Screen 02 · Add Transaction</div>
+          </div>
+          <div class="hfi">
+            <div style="background:#0A1A0F;min-height:280px;display:flex;flex-direction:column;padding:12px">
+              <div style="font-family:'Bebas Neue';font-size:11px;color:#fff;letter-spacing:1px;margin-bottom:10px">BUDGET TRACKER</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="background:#122018;border-radius:9px;padding:9px;border:1px solid #1E3028"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:6.5px;font-weight:600;color:#fff">🍕 Food</div><div style="font-size:5.5px;color:rgba(255,255,255,.4)">₹4,200 / ₹6,000</div></div><div style="height:5px;background:#1E3028;border-radius:3px"><div style="width:70%;height:100%;border-radius:3px;background:#1DB954"></div></div><div style="font-family:'JetBrains Mono';font-size:5px;color:#1DB954;margin-top:2px">● Safe — ₹1,800 remaining</div></div>
+                <div style="background:#122018;border-radius:9px;padding:9px;border:1px solid #1E3028"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:6.5px;font-weight:600;color:#fff">🚌 Transport</div><div style="font-size:5.5px;color:rgba(255,255,255,.4)">₹1,800 / ₹2,000</div></div><div style="height:5px;background:#1E3028;border-radius:3px"><div style="width:90%;height:100%;border-radius:3px;background:#FFB800"></div></div><div style="font-family:'JetBrains Mono';font-size:5px;color:#FFB800;margin-top:2px">⚠ Warning — ₹200 left</div></div>
+                <div style="background:#122018;border-radius:9px;padding:9px;border:1px solid rgba(255,68,68,.2)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:6.5px;font-weight:600;color:#fff">🛍️ Shopping</div><div style="font-size:5.5px;color:#FF4444">₹3,100 / ₹3,000</div></div><div style="height:5px;background:#1E3028;border-radius:3px"><div style="width:100%;height:100%;border-radius:3px;background:#FF4444"></div></div><div style="font-family:'JetBrains Mono';font-size:5px;color:#FF4444;margin-top:2px">✗ Over by ₹100</div></div>
+              </div>
+            </div>
+            <div class="hfl">Screen 03 · Budget Tracker</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 06 &nbsp;Testing Results</div>
+        <h3 class="csh">WHAT THE DATA SHOWED</h3>
+        <p class="csp">8 participants. Tasks: log a transaction, check budget status, set a new budget limit.</p>
+        <div class="metg">
+          <div class="metc"><div class="metn" style="color:var(--a3)">6.4s</div><div class="metl">Avg transaction log</div><div class="metc2">↓ from 38s in v0</div></div>
+          <div class="metc"><div class="metn" style="color:var(--a3)">0</div><div class="metl">Mislogged transactions</div><div class="metc2">↓ from 4 errors</div></div>
+          <div class="metc"><div class="metn" style="color:var(--a3)">89%</div><div class="metl">User satisfaction</div><div class="metc2">↑ from 52%</div></div>
+          <div class="metc"><div class="metn" style="color:var(--a3)">94%</div><div class="metl">Task success rate</div><div class="metc2">↑ from 61%</div></div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 07 &nbsp;Key Learnings</div>
+        <h3 class="csh">WHAT I LEARNED</h3>
+        <div class="leg">
+          <div class="lec"><div class="lei">⌨️</div><div class="let">NUMPAD &gt; TEXT INPUT</div><div class="led">Switching to a numpad-first flow reduced amount-entry time by 70%. Fingers know where numbers are.</div></div>
+          <div class="lec"><div class="lei">🚦</div><div class="let">COLOR IS FASTER THAN TEXT</div><div class="led">Traffic-light bars communicated budget status in under 1 second. Users didn't need to read numbers.</div></div>
+          <div class="lec"><div class="lei">📱</div><div class="let">MOBILE-FIRST FORCES CLARITY</div><div class="led">Designing for a 390px screen eliminated every unnecessary element. The web version benefited too.</div></div>
+        </div>
+      </div>
+
+      <div class="css2">
+        <div class="csl" style="color:var(--a3)">— 08 &nbsp;Figma Build Guide</div>
+        <h3 class="csh">HOW TO BUILD IN FIGMA</h3>
+        <div class="fgb" style="background:var(--a3t);border-color:rgba(63,219,168,.2)">
+          <div class="fgt">📐 File Structure — 4 Pages</div>
+          <div class="fgs">
+            <div class="fgsi"><div class="fgsn" style="color:var(--a3)">PAGE 1</div><div class="fgst">🎨 Design System</div><div class="fgsd">Budget state tokens: safe/warning/over. Semantic color system.</div><div class="fgcode" style="color:var(--a3)">budget/safe → #1DB954<br/>budget/warn → #FFB800<br/>budget/over → #FF4444</div></div>
+            <div class="fgsi"><div class="fgsn" style="color:var(--a3)">PAGE 2</div><div class="fgst">✏️ Wireframes</div><div class="fgsd">Frame 390×844. Focus on tap targets ≥ 44px. Speed-first layout.</div><div class="fgcode" style="color:var(--a3)">Tap target: 44px min<br/>Numpad: 72px cells</div></div>
+            <div class="fgsi"><div class="fgsn" style="color:var(--a3)">PAGE 3</div><div class="fgst">📱 Mobile Hi-Fi</div><div class="fgsd">Apply tokens. Test timing with Principle prototype. Validate 7s target.</div><div class="fgcode" style="color:var(--a3)">Prototype in Principle<br/>Time each interaction</div></div>
+            <div class="fgsi"><div class="fgsn" style="color:var(--a3)">PAGE 4</div><div class="fgst">🖥️ Web Dashboard</div><div class="fgsd">240px sidebar, 1440×900 frame. Charts via FigJam data widget.</div><div class="fgcode" style="color:var(--a3)">Sidebar: 240px<br/>Content: 1200px</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ████ ABOUT ████ -->
+<section id="about" class="sec alt">
+  <div class="ey rv">About</div>
+  <h2 class="sh rv">THE PERSON<br/><em>behind the work</em></h2>
+
+  <div class="about-lay">
+    <div class="rv">
+      <div class="acard">
+        <div class="abn" style="background:linear-gradient(135deg,var(--a1),var(--a2))">
+          <span class="abody-text" style="font-family:'Bebas Neue';font-size:3rem;letter-spacing:4px;color:rgba(255,255,255,.15)">PHANENDRA</span>
+        </div>
+        <div class="abody">
+          <div class="aav" style="background:linear-gradient(135deg,var(--a1),var(--a2))">PN</div>
+          <div class="an">Phanendra Nalla</div>
+          <div class="ar">// UI/UX Designer · Full Stack Dev · Video Editor</div>
+          <div class="afc">
+            <div class="af"><span class="afi">🎓</span> B.Tech IT — GMR Institute of Technology, Razam (2023–2027)</div>
+            <div class="af"><span class="afi">📍</span> Hyderabad, Telangana, India</div>
+            <div class="af"><span class="afi">📧</span> Phanendra275@gmail.com</div>
+            <div class="af"><span class="afi">📞</span> +91-9100108854</div>
+          </div>
+          <div class="acerts">
+            <span class="cert">Responsive Web Design</span>
+            <span class="cert">JS Algorithms</span>
+            <span class="cert">UI/UX Design</span>
+            <span class="cert">Video Editing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rv d1">
+      <div class="ey" style="margin-bottom:20px">Skills &amp; Tools</div>
+      <div class="skg">
+        <div class="ski"><span class="ski-i">🎨</span><span class="ski-n">Figma</span><span class="ski-l">Expert</span></div>
+        <div class="ski"><span class="ski-i">⚡</span><span class="ski-n">Adobe XD</span><span class="ski-l">Advanced</span></div>
+        <div class="ski"><span class="ski-i">🔬</span><span class="ski-n">User Research</span><span class="ski-l">Expert</span></div>
+        <div class="ski"><span class="ski-i">🧩</span><span class="ski-n">Prototyping</span><span class="ski-l">Expert</span></div>
+        <div class="ski"><span class="ski-i">⚛️</span><span class="ski-n">React</span><span class="ski-l">Advanced</span></div>
+        <div class="ski"><span class="ski-i">🌐</span><span class="ski-n">HTML · CSS · JS</span><span class="ski-l">Expert</span></div>
+        <div class="ski"><span class="ski-i">🐍</span><span class="ski-n">Python</span><span class="ski-l">Intermediate</span></div>
+        <div class="ski"><span class="ski-i">🎬</span><span class="ski-n">Premiere Pro</span><span class="ski-l">Advanced</span></div>
+      </div>
+      <div class="ey" style="margin-bottom:16px;margin-top:8px">What I Bring</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:8px;background:var(--a1t);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">🔬</div><div><div style="font-weight:600;margin-bottom:2px;font-size:.88rem;transition:color .6s">Research before pixels</div><div style="font-size:.8rem;color:var(--ink2);line-height:1.6;transition:color .6s">I interview users and gather data before touching Figma. Every design decision has a 'why'.</div></div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:8px;background:var(--a2t);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">⚡</div><div><div style="font-weight:600;margin-bottom:2px;font-size:.88rem;transition:color .6s">Design + code</div><div style="font-size:.8rem;color:var(--ink2);line-height:1.6;transition:color .6s">I prototype in Figma and build in React/HTML. No handoff translation loss.</div></div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:8px;background:var(--a3t);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">📊</div><div><div style="font-weight:600;margin-bottom:2px;font-size:.88rem;transition:color .6s">Data-validated decisions</div><div style="font-size:.8rem;color:var(--ink2);line-height:1.6;transition:color .6s">I test with real users and measure task completion, time-on-task, and satisfaction scores.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ████ CONTACT ████ -->
+<section id="contact">
+  <div class="cg"></div>
+  <div class="ci rv">
+    <div class="ey" style="justify-content:center">Let's work together</div>
+    <h2 class="sh" style="font-size:clamp(2.5rem,5.5vw,5rem)">GOT A<br/><em>project in mind?</em></h2>
+    <p style="color:var(--ink2);max-width:480px;margin:14px auto 0;font-size:.94rem;line-height:1.8;transition:color .6s">I'm available for UI/UX design internships, freelance projects, and full-time roles. Let's build something people love.</p>
+    <a href="mailto:Phanendra275@gmail.com" class="be">Phanendra275@gmail.com</a>
+    <div class="cls">
+      <a href="mailto:Phanendra275@gmail.com" class="cl em">✉ Email Me</a>
+      <a href="https://linkedin.com/in/phanendra-nalla-b91a42366" target="_blank" class="cl">💼 LinkedIn</a>
+      <a href="https://github.com/phanendra275-arch" target="_blank" class="cl">⌥ GitHub</a>
+      <a href="tel:+919100108854" class="cl">📞 +91-9100108854</a>
+    </div>
+  </div>
+</section>
+
+<!-- ████ FOOTER ████ -->
+<footer>
+  <div class="fl">Built with intention by <span>Phanendra Nalla</span> · 2025</div>
+  <div class="flks">
+    <a href="prototype-connectsphere.html" target="_blank">CS Prototype</a>
+    <a href="prototype-flowbudget.html" target="_blank">FB Prototype</a>
+    <a href="#hero">↑ Top</a>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════
+   CURSOR
+══════════════════════════════════════════ */
+const cr=document.getElementById('cr'),cr2=document.getElementById('cr2');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cr.style.left=mx+'px';cr.style.top=my+'px'});
+(function animCursor(){cx+=(mx-cx)*.12;cy+=(my-cy)*.12;cr2.style.left=cx+'px';cr2.style.top=cy+'px';requestAnimationFrame(animCursor)})();
+document.querySelectorAll('a,button,.tb,.pcard,.ski,.hs').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('c-hover'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('c-hover'));
+});
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE — INK DROP RIPPLE
+══════════════════════════════════════════ */
+const tog=document.getElementById('tog');
+const ripple=document.getElementById('ripple');
+const html=document.documentElement;
+const lbl=document.getElementById('tog-lbl');
+let isDark=true;
+
+tog.addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const rx=rect.left+rect.width/2;
+  const ry=rect.top+rect.height/2;
+
+  // Size the ripple to cover the whole viewport
+  const maxD=Math.max(
+    Math.hypot(rx,ry),
+    Math.hypot(window.innerWidth-rx,ry),
+    Math.hypot(rx,window.innerHeight-ry),
+    Math.hypot(window.innerWidth-rx,window.innerHeight-ry)
+  )*2;
+
+  ripple.style.left=rx+'px';
+  ripple.style.top=ry+'px';
+  ripple.style.width=maxD+'px';
+  ripple.style.height=maxD+'px';
+  ripple.style.transform='translate(-50%,-50%) scale(0)';
+  ripple.style.opacity='1';
+  ripple.style.transition='none';
+
+  // Trigger reflow
+  ripple.getBoundingClientRect();
+
+  // Animate expand
+  ripple.classList.add('go');
+  ripple.style.transform='translate(-50%,-50%) scale(1)';
+
+  setTimeout(()=>{
+    isDark=!isDark;
+    html.setAttribute('data-theme',isDark?'dark':'light');
+    lbl.textContent=isDark?'Dark Mode':'Light Mode';
+    // Fade ripple out
+    ripple.style.opacity='0';
+    ripple.style.transition='opacity .5s ease';
+    setTimeout(()=>{
+      ripple.classList.remove('go');
+      ripple.style.transform='translate(-50%,-50%) scale(0)';
+      ripple.style.transition='none';
+      ripple.style.opacity='1';
+    },550);
+  },300);
+});
+
+/* ══════════════════════════════════════════
+   TABS
+══════════════════════════════════════════ */
+function setTab(prefix,tab,btn){
+  document.querySelectorAll(`#${prefix}-tabs .tb`).forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll(`[id^="${prefix}-"]`).forEach(p=>{if(p.classList.contains('tp'))p.classList.remove('on')});
+  btn.classList.add('on');
+  document.getElementById(`${prefix}-${tab}`).classList.add('on');
+}
+
+/* ══════════════════════════════════════════
+   EXPAND / COLLAPSE
+══════════════════════════════════════════ */
+function toggleExp(prefix){
+  const expand=document.getElementById(`${prefix}-expand`);
+  const btn=document.getElementById(`${prefix}-ebtn`);
+  const arr=document.getElementById(`${prefix}-arr`);
+  const isOpen=expand.classList.contains('open');
+  if(isOpen){
+    expand.classList.remove('open');
+    btn.classList.remove('open');
+    btn.childNodes[0].textContent='Read Full Case Study ';
+  } else {
+    expand.classList.add('open');
+    btn.classList.add('open');
+    btn.childNodes[0].textContent='Close Case Study ';
+    setTimeout(()=>expand.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }
+}
+
+/* ══════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════ */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')});
+},{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+/* ══════════════════════════════════════════
+   NAV ACTIVE LINK
+══════════════════════════════════════════ */
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nav-links a');
+const navObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.style.color='');
+      const active=document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if(active)active.style.color='var(--a1)';
+    }
+  });
+},{threshold:.4});
+sections.forEach(s=>navObs.observe(s));
+</script>
+</body>
+</html>
